@@ -1,0 +1,2 @@
+4/3/2024, 12:04:23 AM | ERROR | can not find this route : /api/v1/api/v1/User/AddUser on serve
+4/3/2024, 7:19:03 PM | ERROR | can not find this route : /api/v1/User/GetCurrentLoginInformations?id=2 on serve
