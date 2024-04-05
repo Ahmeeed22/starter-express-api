@@ -9,9 +9,9 @@ const { addClientSchema , loginSchema , updateClientSchema } = require("../joi/c
 
 
 clientRoutes.get("/AllClients",isAuth('ALL'),getAllClients);
-clientRoutes.put('/UpdateClient/:id',isAuth('ADMIN'),validateRequest(updateClientSchema),updateClient);
+clientRoutes.put('/UpdateClient/:id',isAuth('ALL'),validateRequest(updateClientSchema),updateClient);
 clientRoutes.post('/AddClient',validateRequest(addClientSchema),addClient);
-clientRoutes.get('/GetSingleClient/:id',isAuth('ADMIN'),getSingleClient);
+clientRoutes.get('/GetSingleClient/:id',isAuth('ALL'),getSingleClient);
 clientRoutes.get('/SearchClient',isAuth('ADMIN'),search);
 clientRoutes.post('/Login',validateRequest(loginSchema),login);
 clientRoutes.post('/IsEmailAvailable',isEmailAvailable) ;

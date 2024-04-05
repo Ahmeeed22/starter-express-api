@@ -6,12 +6,12 @@ const { addUserSchema, loginSchema, updateUserSchema } = require("../joi/user.va
 
 
 
-userRoutes.get("/AllUsers",isAuth('ADMIN'),getAllUsers);
-userRoutes.delete('/DeleteUser/:id',isAuth('ADMIN'),deleteUser);
-userRoutes.put('/UpdateUser/:id',isAuth('ADMIN'),validateRequest(updateUserSchema),updateUser);
+userRoutes.get("/AllUsers",isAuth('ALL'),getAllUsers);
+userRoutes.delete('/DeleteUser/:id',isAuth('ALL'),deleteUser);
+userRoutes.put('/UpdateUser/:id',isAuth('ALL'),validateRequest(updateUserSchema),updateUser);
 userRoutes.post('/AddUser',validateRequest(addUserSchema),addUser);
-userRoutes.get('/GetCurrentLoginInformations/:id',getCurrentLoginInformations)
-userRoutes.get('/SearchUser',isAuth('ADMIN'),search)
+userRoutes.get('/GetCurrentLoginInformations',isAuth('ALL'),getCurrentLoginInformations)
+userRoutes.get('/SearchUser',isAuth('ALL'),search)
 userRoutes.post('/Login',validateRequest(loginSchema),login)
 
 

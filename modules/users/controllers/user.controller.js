@@ -46,10 +46,10 @@ const updateUser=catchAsyncError(async(req,res,next)=>{
 
 // get single user
 const getCurrentLoginInformations=catchAsyncError(async(req,res,next)=>{
-        let {id}=req.params;
-        console.log(req.params); 
+        let id=req.loginData.id;
+        console.log(id); 
         let user=await User.findOne({where:{id}});
-        res.status(StatusCodes.OK).json({success: true ,user : {...user.dataValues , permissions : JSON.parse(user.permissions)}}); 
+        res.status(StatusCodes.OK).json({success: true ,user : {...user?.dataValues , permissions : JSON.parse(user.permissions)}}); 
    
 })
 
