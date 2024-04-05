@@ -16,6 +16,10 @@ const Client = sequelize.define("client", {
     },
     password: {
         type: Sequelize.STRING,
+        // defaultValue: function() {
+        //     return this.getDataValue('name') + '1197';
+        // },
+        allowNull : true 
     },
     active: {
         type: Sequelize.BOOLEAN,
@@ -29,10 +33,14 @@ const Client = sequelize.define("client", {
         type: Sequelize.DATEONLY,
     },
     phoneNumber: {
-        type: Sequelize.STRING,
-        unique: true, 
+        type: Sequelize.TEXT, 
+    //   defaultValue: JSON.stringify(['Pages.Client.List']), // Default value as JSON string
+      allowNull: false 
     }
 });
+
+
+
 
 // Hook before create user to hash password
 Client.beforeCreate(async (client, options) => {

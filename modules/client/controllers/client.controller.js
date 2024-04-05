@@ -12,8 +12,9 @@ const logger=new LoggerService('user.controller')
 
 // get all clients
 const getAllClients=catchAsyncError(async(req,res,next)=>{
+    console.log("Sssssssssssssssssssssssssssssssssssssss",req.loginData.id);
         const clients=await  Client.findAndCountAll({
-            where:{admin_id:req.loginData.admin_id} ,
+            where:{admin_id:req.loginData.id} ,
             include :  [{ model: ClientHistory , } ]
         });
         res.status(StatusCodes.OK).json({message:"succes",clients})
@@ -59,14 +60,14 @@ const search=catchAsyncError(async(req,res,next)=>{
 })
 // add client
 const addClient=catchAsyncError(async(req,res,next)=>{
-    const {password} = req.body
+    const password = req.body.name + 137
         const client= await  Client.findOne({where:{email:req.body.email}});
         if (client) {
             res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
         } else {
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
-                var result= await Client.create({...req.body , password:hash})
+                var result= await Client.create({...req.body,phoneNumber:JSON.stringify(req.body.phoneNumber) , password:hash})
                  res.status(StatusCodes.CREATED).json({message:"success",result})
             })
         }
@@ -92,4 +93,38 @@ const login =catchAsyncError(async(req,res,next)=>{
         }
 })
 
-module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login}
+// check unique email 
+const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
+    const { email } = req.body;
+    const existingClient = await Client.findOne({ where: { email } });
+        if (existingClient) {
+            return res.status(400).json({ result: false });
+        }else{
+            return res.status(200).json({ result: true });
+        }
+    
+}) 
+
+// check unique phone Number 
+const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
+    const { phoneNumber } = req.body;
+    const existingClient = await Client.findOne({ where: { phoneNumber : JSON.stringify(phoneNumber) } });
+        if (existingClient) {
+            return res.status(400).json({ result: false });
+        }else{
+            return res.status(200).json({ result: true });
+        }
+})
+
+// check unique phone Number 
+const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
+    const { identity } = req.body;
+    const existingClient = await Client.findOne({ where: { identity } });
+        if (existingClient) {
+            return res.status(400).json({ result: false });
+        }else{
+            return res.status(200).json({ result: true });
+        }
+})
+
+module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login ,isEmailAvailable ,isPhoneNumberAvailable , isIdentityAvailable}
