@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (authRole="ALL")=>{
     return (req,res,next)=>{
-        const token= req.headers?.authorization?.split(" ")[1]
+        const token= req.headers?.authorization?.split(" ")[1]  || req.headers?.Authorization?.split(" ")[1] 
         if (token) {
             try {
                 const {id,role , company_id,name,email}=jwt.verify(token,'jusuraltamayuz2332') ;

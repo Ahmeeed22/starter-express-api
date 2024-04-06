@@ -49,7 +49,7 @@ const getCurrentLoginInformations=catchAsyncError(async(req,res,next)=>{
         let id=req.loginData.id;
         console.log(id); 
         let user=await User.findOne({where:{id}});
-        res.status(StatusCodes.OK).json({success: true ,user : {...user?.dataValues , permissions : JSON.parse(user.permissions)}}); 
+        res.status(StatusCodes.OK).json({success: true ,result : {...user?.dataValues , permissions : JSON.parse(user.permissions)},message : "Current User information got successfully"}); 
    
 })
 
@@ -93,7 +93,7 @@ const login =catchAsyncError(async(req,res,next)=>{
             var token =jwt.sign({email,id:user.id,name:user.name , role:user.role , company_id:user.company_id},'jusuraltamayuz2332',{expiresIn:'8h'}) ;
             var decode=jwt.decode(token ,'jusuraltamayuz2332') ;
  
-            res.status(StatusCodes.OK).json({success: true,token,data:{id:user.id ,name : user.name}})
+            res.status(StatusCodes.OK).json({success: true,token,data:{id:user.id ,name : user.name},message : "Logged in successfully"})
 
            } else {
             next(new AppError('password wrong',403))
