@@ -54,7 +54,7 @@ const getCurrentLoginInformations=catchAsyncError(async(req,res,next)=>{
 })
 
 // search
-const search=catchAsyncError(async(req,res,next)=>{
+const search=catchAsyncError(async(req,res,next)=>{ 
         let {searchKey}=req.query;
         if(searchKey){
           let users= await User.findAll({where:{name:{[Op.like]: `%${searchKey}%`,company_id:req.loginData.company_id}}});

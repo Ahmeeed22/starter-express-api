@@ -58,6 +58,11 @@ const getAllClients=catchAsyncError(async(req,res,next)=>{
 const updateClient=catchAsyncError(async(req,res,next)=>{
 
         let id=req.params.id;
+        let client=await Client.findOne({
+            where:{id}  } );
+        if (!client) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
         await Client.update({...req.body , admin_id : req.loginData.id},{where:{id}})
         res.status(StatusCodes.OK).json({success:true, message : "Updated Client Successfully"})
 
@@ -70,7 +75,7 @@ const getSingleClient=catchAsyncError(async(req,res,next)=>{
                                             where:{id} ,
                                             include :  [{ model: ClientHistory , } ]
                                         } , );
-        res.status(StatusCodes.OK).json({success:true,client});
+        res.status(StatusCodes.OK).json({success:true,result:client});
    
 })
 // search

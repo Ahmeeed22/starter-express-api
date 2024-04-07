@@ -60,7 +60,7 @@ const getSingleEmp=catchAsyncError(async(req,res,next)=>{
         let emp=await Employee.findOne({
                                             where:{id} ,
                                         } , );
-        res.status(StatusCodes.OK).json({success:true,employee :emp});
+        res.status(StatusCodes.OK).json({success:true,result :emp , message : "Returned Employee Successfully"});
    
 })
 

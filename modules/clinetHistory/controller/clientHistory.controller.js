@@ -14,6 +14,10 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
     };
     if (req.query.clientHistory_id) {
         searchCriteria.id = req.query.clientHistory_id ;
+        var clientHistory = await ClientHistory.findOne({
+            where: searchCriteria
+        })
+        res.status(StatusCodes.OK).json({ success: true, result:clientHistory})
     }
     var clientHistorys = await ClientHistory.findAndCountAll({
         where: searchCriteria
