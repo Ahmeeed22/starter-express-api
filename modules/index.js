@@ -1,7 +1,7 @@
 const sequelize = require("../configrations/sequelize");
 const createTable=()=>{
     sequelize.sync(
-        // {alter: true}           
+        {alter: true}        
         ).then(async(result)=>{
             // await BankAccount.sync({ alter: true });
         console.log("connection success");

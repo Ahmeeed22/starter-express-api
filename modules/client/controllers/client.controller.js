@@ -65,7 +65,7 @@ const updateClient=catchAsyncError(async(req,res,next)=>{
 
 // get single client
 const getSingleClient=catchAsyncError(async(req,res,next)=>{
-        let id=req.params.id;
+        let id=req.query.id;
         let client=await Client.findOne({
                                             where:{id} ,
                                             include :  [{ model: ClientHistory , } ]
@@ -131,9 +131,9 @@ const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
     const { email } = req.body;
     const existingClient = await Client.findOne({ where: { email } });
         if (existingClient) {
-            return res.status(400).json({ result: false });
+            return res.status(400).json({ success : true ,result: false });
         }else{
-            return res.status(200).json({ result: true });
+            return res.status(200).json({ success : true ,result: true });
         }
     
 }) 
@@ -143,9 +143,9 @@ const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
     const { phoneNumber , countryCode} = req.body;
     const existingClient = await Client.findOne({ where: { phoneNumber : phoneNumber , countryCode} });
         if (existingClient) {
-            return res.status(400).json({ result: false });
+            return res.status(400).json({ success : true ,result: false });
         }else{
-            return res.status(200).json({ result: true });
+            return res.status(200).json({ success : true ,result: true });
         }
 })
 
@@ -154,9 +154,9 @@ const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
     const { identity } = req.body;
     const existingClient = await Client.findOne({ where: { identity } });
         if (existingClient) {
-            return res.status(400).json({ result: false });
+            return res.status(400).json({ success : true ,result: false });
         }else{
-            return res.status(200).json({ result: true });
+            return res.status(200).json({ success : true ,result: true });
         }
 })
 

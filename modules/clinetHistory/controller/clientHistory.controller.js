@@ -90,9 +90,9 @@ const isNumberAvailable =catchAsyncError(async(req,res,next)=>{
     const { number} = req.body;
     const existingClientHistory = await ClientHistory.findOne({ where: { number } });
         if (existingClientHistory) {
-            return res.status(400).json({ result: false });
+            return res.status(400).json({ success : true ,result: false });
         }else{
-            return res.status(200).json({ result: true });
+            return res.status(200).json({ success : true ,result: true });
         }
 })
 
