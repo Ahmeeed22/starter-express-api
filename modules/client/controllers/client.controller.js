@@ -65,7 +65,7 @@ const updateClient=catchAsyncError(async(req,res,next)=>{
 
 // get single client
 const getSingleClient=catchAsyncError(async(req,res,next)=>{
-        let id=req.query.id;
+        let id=req.params.id;
         let client=await Client.findOne({
                                             where:{id} ,
                                             include :  [{ model: ClientHistory , } ]
