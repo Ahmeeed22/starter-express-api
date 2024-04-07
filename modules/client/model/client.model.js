@@ -33,9 +33,12 @@ const Client = sequelize.define("client", {
         type: Sequelize.DATEONLY,
     },
     phoneNumber: {
-        type: Sequelize.TEXT, 
-    //   defaultValue: JSON.stringify(['Pages.Client.List']), // Default value as JSON string
-      allowNull: false 
+        type: Sequelize.STRING,
+        unique: true,
+    } ,
+    countryCode : {
+        type : Sequelize.STRING,
+        defaultValue : "+966"
     }
 });
 

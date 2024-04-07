@@ -5,30 +5,38 @@ const { catchAsyncError } = require("../../../helpers/catchSync");
 const { Op, Sequelize } = require("sequelize");
 const { log } = require("console");
 const ClientHistory = require("../model/clientHistory.model");
+const Client = require("../../client/model/client.model");
 
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
-    const client_id = req.params.client_id
+    const searchCriteria = {
+        client_id: req.query.client_id  ,
+        active: true  
+    };
+    if (req.query.clientHistory_id) {
+        searchCriteria.id = req.query.clientHistory_id ;
+    }
     var clientHistorys = await ClientHistory.findAndCountAll({
-        where: { client_id: client_id, active: true }
+        where: searchCriteria
         , order: [
             ['createdAt', 'DESC'],
-        ], include: User
+        ],
+        //  include: Client
     })
-    res.status(StatusCodes.OK).json({ message: "success", result: clientHistorys })
+    res.status(StatusCodes.OK).json({ success: true, result:{totalCount:clientHistorys.count , items : clientHistorys.rows }})
 
 })
 
 const addClientHistory = catchAsyncError(async (req, res, next) => {
 
-        var clientHistory = await ClientHistory.create(req.body);
-        res.status(StatusCodes.CREATED).json({ message: "success", result: clientHistory })
+        var clientHistory = await ClientHistory.create({...req.body, client_id : req.query.client_id});
+        res.status(StatusCodes.CREATED).json({success:true, message: "client history added successfully", result: clientHistory })
 
 })
 
 
 
 const updateClientHistory = catchAsyncError(async (req, res, next) => {
-    const id = req.params.id
+    const id = req.query.id
     var clientHistoryOld = await ClientHistory.findOne({ where: { id } })
     if (!clientHistoryOld)
         next(new AppError('invalid id ClientHistory', 400))

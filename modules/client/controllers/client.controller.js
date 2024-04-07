@@ -7,6 +7,7 @@ const AppError = require("../../../helpers/AppError");
 const { catchAsyncError } = require("../../../helpers/catchSync");
 const LoggerService = require("../../../services/logger.service");
 const ClientHistory = require("../../clinetHistory/model/clientHistory.model");
+const { log } = require("console");
 
 const logger=new LoggerService('user.controller')
 
@@ -18,36 +19,36 @@ const getAllClients=catchAsyncError(async(req,res,next)=>{
      const perPage = parseInt(req.query.per_page) || 12; // Default per_page to 10 if not provided
      // Calculate offset based on page and perPage
      const offset = (page - 1) * perPage;
+    // Define search criteria based on query parameter 'search'
+    const search = req.query.search;
 
-     // Define search criteria based on query parameters
-    const searchCriteria = {
+    let searchCriteria = {
         admin_id: req.loginData.id
     };
-
-    // Add additional search criteria if provided in query parameters
-    if (req.query.name) {
-        searchCriteria.name = req.query.name;
-    }
-
-    if (req.query.email) {
-        searchCriteria.email = req.query.email;
-    }
-
-    if (req.query.identity) {
-        searchCriteria.identity = req.query.identity;
-    }
+    if (req.query.search){
+        searchCriteria = {
+            ...searchCriteria,
+            [Op.or]: [
+                { name: { [Op.like]: `%${search}%` } },
+                { email: { [Op.like]: `%${search}%` } },
+                { identity: { [Op.like]: `%${search}%` } },
+                // Add more attributes here for searching
+                // Add phoneNumber as well
+                { phoneNumber: { [Op.like]: `%${search}%` } }
+            ]
+        };
+    } 
 
 
         const clients=await  Client.findAndCountAll({
             where:searchCriteria ,
-            include :  [{ model: ClientHistory , } ] ,
+            include :  [{ model: ClientHistory , } ] , 
             limit: perPage,
             offset: offset,
         });
 
         // Calculate total pages
         const totalPages = Math.ceil(clients.count / perPage);
-
         res.status(StatusCodes.OK).json({success:true,result:{totalCount:clients.count,totalPages: totalPages,
             currentPage: page, perPage: perPage ,items :clients.rows}})
 }) 
@@ -57,10 +58,10 @@ const getAllClients=catchAsyncError(async(req,res,next)=>{
 const updateClient=catchAsyncError(async(req,res,next)=>{
 
         let id=req.params.id;
-        await Client.update(req.body,{where:{id}})
-        res.status(StatusCodes.OK).json({success:true})
+        await Client.update({...req.body , admin_id : req.loginData.id},{where:{id}})
+        res.status(StatusCodes.OK).json({success:true, message : "Updated Client Successfully"})
 
-})
+}) 
 
 // get single client
 const getSingleClient=catchAsyncError(async(req,res,next)=>{
@@ -99,7 +100,7 @@ const addClient=catchAsyncError(async(req,res,next)=>{
         } else {
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
-                var result= await Client.create({...req.body,phoneNumber:JSON.stringify(req.body.phoneNumber) , password:hash})
+                var result= await Client.create({...req.body , password:hash , admin_id : req.loginData.id})
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"})
             })
         }
@@ -139,8 +140,8 @@ const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
 
 // check unique phone Number 
 const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
-    const { phoneNumber } = req.body;
-    const existingClient = await Client.findOne({ where: { phoneNumber : JSON.stringify(phoneNumber) } });
+    const { phoneNumber , countryCode} = req.body;
+    const existingClient = await Client.findOne({ where: { phoneNumber : phoneNumber , countryCode} });
         if (existingClient) {
             return res.status(400).json({ result: false });
         }else{
