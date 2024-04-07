@@ -6,8 +6,9 @@ module.exports = {
                 name: Joi.string().min(3).required().messages({
                     "string.empty": "Name is required"
                 }),
-                number: Joi.string().required().messages({
-                    "string.empty": "Number is required"
+                number: Joi.string().required().unique().messages({
+                    "string.empty": "Number is required" ,
+                    "any.unique": "Number already exists"
                 }),
                 expireDate: Joi.date().iso().required().messages({
                     "date.iso": "Expire date must be in ISO date format"

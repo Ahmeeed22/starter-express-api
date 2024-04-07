@@ -45,7 +45,7 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
         updateData={...req.body} ;
 
         var clientHistory = await ClientHistory.update(updateData, { where: { id } }) ; 
-        res.status(StatusCodes.OK).json({ message: "success", result: clientHistory  })
+        res.status(StatusCodes.OK).json({ success : true,message: "Updated Client History Successfully", result: clientHistory  })
 })
 
 // search
@@ -81,26 +81,21 @@ const searchClientHistorys = catchAsyncError(async (req, res, next) => {
             // ]
             ,});
         res.status(StatusCodes.OK).json({ message: "success", result: clientHistory })
-    } else {
-        let clientHistory = await ClientHistory.findAll({
-            where: {
-                company_id: req.loginData.company_id ,
-                
-              },
-            order: [
-                ['createdAt', 'DESC']
-            ],include:[
-                {model:Transaction,attributes: ['paymentAmount','balanceDue', "id"]},
-                { model: DepositHistory ,order: [['createdAt', 'DESC']] }
-               
-               ]
-        });
-        res.status(StatusCodes.OK).json({ message: "success", result: customers })
-    }
+    } 
 
+})
+  
+// check unique phone Number 
+const isNumberAvailable =catchAsyncError(async(req,res,next)=>{
+    const { number} = req.body;
+    const existingClientHistory = await ClientHistory.findOne({ where: { number } });
+        if (existingClientHistory) {
+            return res.status(400).json({ result: false });
+        }else{
+            return res.status(200).json({ result: true });
+        }
 })
 
 
 
-
-module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys }
+module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys ,isNumberAvailable}

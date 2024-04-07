@@ -13,7 +13,7 @@ const ClientHistory = sequelize.define('clientHistory', {
     number: {
         type: Sequelize.STRING,
         allowNull: false ,
-        // unique: true, 
+        unique: true, 
     },
     expireDate: {
         type: Sequelize.DATEONLY
