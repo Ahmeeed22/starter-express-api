@@ -8,12 +8,12 @@ const ClientHistory = require("../model/clientHistory.model");
 const Client = require("../../client/model/client.model");
 
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
-    const searchCriteria = {
+    let searchCriteria = {
         client_id: req.query.client_id  ,
         active: true  
     };
     if (req.query.clientHistory_id) {
-        searchCriteria.id = req.query.clientHistory_id ;
+        searchCriteria= {id : req.query.clientHistory_id };
         var clientHistory = await ClientHistory.findOne({
             where: searchCriteria
         })

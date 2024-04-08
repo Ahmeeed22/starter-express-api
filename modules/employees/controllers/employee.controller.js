@@ -66,9 +66,9 @@ const getSingleEmp=catchAsyncError(async(req,res,next)=>{
 
 // add employee
 const addEmp=catchAsyncError(async(req,res,next)=>{
-        const emp= await  Employee.findOne({where:{id:req.body.identity}});
+        const emp= await  Employee.findOne({where:{identity:req.body.identity}});
         if (emp) {
-            res.status(StatusCodes.BAD_REQUEST).json({message:"id is identity"})
+            res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit "})
         } else {
                 var result= await Employee.create({...req.body})
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Employee Successfully"})

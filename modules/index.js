@@ -9,5 +9,5 @@ const createTable=()=>{
         console.log("err",err); 
         
     })  
-} 
+}  
 module.exports=createTable;        

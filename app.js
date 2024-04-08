@@ -23,6 +23,8 @@ const userRoutes = require("./modules/users/routes/user.routes");
 const clientHistoryRoutes = require("./modules/clinetHistory/routes/clientHistory.routes");
 const Employee = require("./modules/employees/model/employee.model");
 const employeeRoutes = require("./modules/employees/routes/employee.routes");
+const Car = require("./modules/cars/model/car.model");
+const carRoutes = require("./modules/cars/routes/car.routes");
 
 const app =express();
 app.use(cors())
@@ -62,6 +64,13 @@ const loggerRoute=new LoggerService('error.route')
     Employee.belongsTo(ClientHistory,{
         foreignKey : 'clientHistory_id'
     })
+
+    ClientHistory.hasMany(Car,{
+        foreignKey : 'clientHistory_id' 
+    })
+    Car.belongsTo(ClientHistory,{
+        foreignKey : 'clientHistory_id'
+    })
    
 
   
@@ -73,7 +82,8 @@ app.use('/api/v1/Client',clientRoutes);
 app.use('/api/v1/User',userRoutes);
 app.use('/api/v1/Company',companyRoutes);
 app.use('/api/v1/ClientHistory',clientHistoryRoutes)
-app.use('/api/v1/Employee',employeeRoutes)
+app.use('/api/v1/Employee',employeeRoutes);
+app.use('/api/v1/Car',carRoutes);
 
 
 
