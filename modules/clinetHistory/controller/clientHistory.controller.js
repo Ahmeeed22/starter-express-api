@@ -12,6 +12,11 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
         client_id: req.query.client_id  ,
         active: true  
     };
+    const page =  req.query.page||1;
+    const perPage = parseInt(req.query.per_page) || 1000; // Default per_page to 1000 if not provided
+    // Calculate offset based on page and perPage
+    const offset = (page - 1) * perPage;
+
     if (req.query.clientHistory_id) {
         searchCriteria= {id : req.query.clientHistory_id };
         var clientHistory = await ClientHistory.findOne({
@@ -20,13 +25,14 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
         res.status(StatusCodes.OK).json({ success: true, result:clientHistory})
     }
     var clientHistorys = await ClientHistory.findAndCountAll({
-        where: searchCriteria
-        , order: [
-            ['createdAt', 'DESC'],
-        ],
+        where: searchCriteria,
+        limit: perPage,
+        offset: offset,
+       
         //  include: Client
-    })
-    res.status(StatusCodes.OK).json({ success: true, result:{totalCount:clientHistorys.count , items : clientHistorys.rows }})
+    }) ;
+    const totalPages = Math.ceil(clientHistorys.count / perPage);
+    res.status(StatusCodes.OK).json({ success: true, result:{totalCount:clientHistorys.count,totalPages: totalPages,currentPage: page, perPage: perPage, items : clientHistorys.rows }})
 
 })
 
