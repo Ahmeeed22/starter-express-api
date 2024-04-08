@@ -99,16 +99,29 @@ const search=catchAsyncError(async(req,res,next)=>{
 // add client
 const addClient=catchAsyncError(async(req,res,next)=>{
     const password = req.body.name + 137
-        const client= await  Client.findOne({where:{email:req.body.email}});
+        let client= await  Client.findOne({where:{email:req.body.email}});
         if (client) {
             res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
-        } else {
+        } 
+        // Check if the phoneNumber already exists
+        client = await Client.findOne({ where: { phoneNumber } });
+        if (client) {
+             res.status(StatusCodes.BAD_REQUEST).json({ message: "Phone number already exists" });
+        }
+
+        // Check if the identity already exists
+        client = await Client.findOne({ where: { identity } });
+        if (client) {
+             res.status(StatusCodes.BAD_REQUEST).json({ message: "Identity already exists" });
+        }
+
+
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
                 var result= await Client.create({...req.body , password:hash , admin_id : req.loginData?.id})
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"})
             })
-        }
+        
 })
 // login
 const login =catchAsyncError(async(req,res,next)=>{

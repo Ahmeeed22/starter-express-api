@@ -30,7 +30,7 @@ const User=sequelize.define("user",{
     },
      permissions: {
       type: Sequelize.TEXT, // Assuming TEXT data type for JSON serialization
-      defaultValue: JSON.stringify(['Pages.Client.List']), // Default value as JSON string
+      defaultValue: JSON.stringify(['Pages.Client.List','Pages.Client.Edit','Pages.Statistics','Pages.Client.Add','Pages.ClientHistory.List','Pages.ClientHistory.Add','Pages.ClientHistory.Edit','Pages.Employee.List','Pages.Employee.Edit','Pages.Employee.Delete','Pages.Employee.Add','Pages.Car.Add','Pages.Car.Edit','Pages.Car.List','Pages.Car.Delete']), // Default value as JSON string
       allowNull: false 
     }
 })
