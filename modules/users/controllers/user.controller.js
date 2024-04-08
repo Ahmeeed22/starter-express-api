@@ -71,7 +71,7 @@ const addUser=catchAsyncError(async(req,res,next)=>{
     console.log("###############################################################",req.body);
         const user= await  User.findOne({where:{email:req.body.email}});
         if (user) {
-            res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
+            res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message:"email is exit"})
         } else {
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
@@ -85,7 +85,8 @@ const addUser=catchAsyncError(async(req,res,next)=>{
 const login =catchAsyncError(async(req,res,next)=>{
     const {email , password} = req.body ;
         console.log(email);
-        const user= await User.findOne({where:{email : email}})
+        const user= await User.findOne({where:{email : email}}) ;
+        console.log("USER === ",user);
         if (user) {
            const match= await bcrypt.compare(password ,user.password);
             

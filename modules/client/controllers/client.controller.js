@@ -106,13 +106,13 @@ const addClient=catchAsyncError(async(req,res,next)=>{
         // Check if the phoneNumber already exists
         client = await Client.findOne({ where: { phoneNumber : req.body.phoneNumber} });
         if (client) {
-             res.status(StatusCodes.BAD_REQUEST).json({ message: "Phone number already exists" });
+             res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message: "Phone number already exists" });
         }
 
         // Check if the identity already exists
         client = await Client.findOne({ where: { identity : req.body.identity} });
         if (client) {
-             res.status(StatusCodes.BAD_REQUEST).json({ message: "Identity already exists" });
+             res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message: "Identity already exists" });
         }
 
 
