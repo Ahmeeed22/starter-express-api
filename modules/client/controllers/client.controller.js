@@ -21,7 +21,7 @@ const getAllClients=catchAsyncError(async(req,res,next)=>{
      const offset = (page - 1) * perPage;
     // Define search criteria based on query parameter 'search'
     const search = req.query.search;
-
+    console.log("################# ############  ",req.loginData.id);
     let searchCriteria = {
         admin_id: req.loginData.id
     };
@@ -104,13 +104,13 @@ const addClient=catchAsyncError(async(req,res,next)=>{
             res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
         } 
         // Check if the phoneNumber already exists
-        client = await Client.findOne({ where: { phoneNumber } });
+        client = await Client.findOne({ where: { phoneNumber : req.body.phoneNumber} });
         if (client) {
              res.status(StatusCodes.BAD_REQUEST).json({ message: "Phone number already exists" });
         }
 
         // Check if the identity already exists
-        client = await Client.findOne({ where: { identity } });
+        client = await Client.findOne({ where: { identity : req.body.identity} });
         if (client) {
              res.status(StatusCodes.BAD_REQUEST).json({ message: "Identity already exists" });
         }
@@ -118,7 +118,9 @@ const addClient=catchAsyncError(async(req,res,next)=>{
 
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
-                var result= await Client.create({...req.body , password:hash , admin_id : req.loginData?.id})
+                let data  = {...req.body , password:hash , admin_id : req.loginData?.id}
+                console.log("###################### &&&&&&&&&&&&&&&&&& ",data ,"$$$$$$$$$ ",req.loginData);
+                var result= await Client.create(data)
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"})
             })
         
