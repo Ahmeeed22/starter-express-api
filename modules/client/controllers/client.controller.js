@@ -105,7 +105,7 @@ const addClient=catchAsyncError(async(req,res,next)=>{
         } else {
             bcrypt.hash(password,7, async (err,hash)=>{
                 if(err) throw err
-                var result= await Client.create({...req.body , password:hash , admin_id : req.loginData.id})
+                var result= await Client.create({...req.body , password:hash , admin_id : req.loginData?.id})
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"})
             })
         }
