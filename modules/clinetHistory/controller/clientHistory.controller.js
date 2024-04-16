@@ -9,7 +9,7 @@ const Client = require("../../client/model/client.model");
 
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
     let searchCriteria = {
-        client_id: req.query.client_id  ,
+        client_id: req.query.client_id? req.query.client_id : req.loginData.id  ,
         active: true  
     };
     const page =  req.query.page||1;
