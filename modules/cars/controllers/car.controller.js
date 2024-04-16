@@ -73,7 +73,7 @@ const addCar=catchAsyncError(async(req,res,next)=>{
         // if (car) {
         //     res.status(StatusCodes.BAD_REQUEST).json({message:"id is found before"})
         // } else {
-                var result= await Car.create({...req.body})
+                var result= await Car.create({...req.body,formImage :"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"})
                  res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Car Successfully"})
         // }
 })
