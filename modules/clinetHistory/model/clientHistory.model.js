@@ -61,7 +61,8 @@ const ClientHistory = sequelize.define('clientHistory', {
     },
     certificateFile: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: true ,
+        defaultValue : "https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"
     }
 });
    

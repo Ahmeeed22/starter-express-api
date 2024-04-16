@@ -9,6 +9,6 @@ carRoutes.post('/AddCar', validateRequest(addCarSchema) ,isAuth('ALL'),addCar)
 carRoutes.put('/UpdateCar',validateRequest(updateCarSchema),isAuth('ALL'),updateCar)
 carRoutes.delete('/DeleteCar',isAuth('ALL'),deleteCar) ;
 carRoutes.get('/GetSingleCar',isAuth('ALL'),getSingleCar) ;
-// carRoutes.post('/IsIdentityAvailable',isIdentityAvailable) ; 
+// carRoutes.post('/IsWorkPermitCardAvailable',isWorkPermitCardAvailable) ; 
 
 module.exports=carRoutes;

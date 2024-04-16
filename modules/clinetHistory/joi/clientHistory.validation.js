@@ -13,7 +13,6 @@ module.exports = {
                 expireDate: Joi.date().iso().required().messages({
                     "date.iso": "Expire date must be in ISO date format"
                 }),
-                client_id : Joi.number().min() ,
                 licenseNumber: Joi.string().allow(null),
                 licenseDate: Joi.date().allow(null),
                 certificateNumber: Joi.string().allow(null),
@@ -41,7 +40,6 @@ module.exports = {
             expireDate: Joi.date().iso().required().messages({
                 "date.iso": "Expire date must be in ISO date format"
             }),
-            client_id : Joi.number().min() ,
             licenseNumber: Joi.string().allow(null),
             licenseDate: Joi.date().allow(null),
             certificateNumber: Joi.string().allow(null),
