@@ -9,32 +9,37 @@ const Client = require("../../client/model/client.model");
 
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
     let searchCriteria = {
-        client_id: req.query.client_id? req.query.client_id : req.loginData.id  ,
+        client_id: req.query.client_id ? req.query.client_id : req.loginData.id,
         active: true  
     };
-    const page =  req.query.page||1;
+    const page = req.query.page || 1;
     const perPage = parseInt(req.query.per_page) || 1000; // Default per_page to 1000 if not provided
     // Calculate offset based on page and perPage
     const offset = (page - 1) * perPage;
 
     if (req.query.clientHistory_id) {
-        searchCriteria= {id : req.query.clientHistory_id };
+        searchCriteria = { id : req.query.clientHistory_id };
         var clientHistory = await ClientHistory.findOne({
             where: searchCriteria
-        })
-        res.status(StatusCodes.OK).json({ success: true, result:clientHistory})
+        });
+        return res.status(StatusCodes.OK).json({ success: true, result: clientHistory });
     }
+
+    // Fetch total count without limit and offset
+    const totalCount = await ClientHistory.count({ where: searchCriteria });
+
+    // Fetch clientHistorys with limit and offset
     var clientHistorys = await ClientHistory.findAndCountAll({
         where: searchCriteria,
         limit: perPage,
         offset: offset,
-       
-        //  include: Client
-    }) ;
-    const totalPages = Math.ceil(clientHistorys.count / perPage);
-    res.status(StatusCodes.OK).json({ success: true, result:{totalCount:clientHistorys.count,totalPages: totalPages,currentPage: page, perPage: perPage, items : clientHistorys.rows }})
+        order: [['createdAt', 'DESC']] // Order by createdAt in descending order
+    });
 
-})
+    const totalPages = Math.ceil(totalCount / perPage);
+    res.status(StatusCodes.OK).json({ success: true, result: { totalCount: totalCount, totalPages: totalPages, currentPage: page, perPage: perPage, items: clientHistorys.rows } });
+});
+
 
 const addClientHistory = catchAsyncError(async (req, res, next) => {
         let clientHistoryy= await  ClientHistory.findOne({where:{number:req.body.number}});

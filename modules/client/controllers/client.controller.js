@@ -12,46 +12,57 @@ const { log } = require("console");
 const logger=new LoggerService('user.controller')
 
 // get all clients
-const getAllClients=catchAsyncError(async(req,res,next)=>{
-
-     // Parse query parameters
-     const page = parseInt(req.query.page) || 1;
-     const perPage = parseInt(req.query.per_page) || 12; // Default per_page to 10 if not provided
-     // Calculate offset based on page and perPage
-     const offset = (page - 1) * perPage;
-    // Define search criteria based on query parameter 'search'
+const getAllClients = catchAsyncError(async(req, res, next) => {
+    // Parse query parameters
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.per_page) || 12;
+    const offset = (page - 1) * perPage;
     const search = req.query.search;
-    console.log("################# ############  ",req.loginData.id);
+
     let searchCriteria = {
         admin_id: req.loginData.id
     };
-    if (req.query.search){
+
+    if (req.query.search) {
         searchCriteria = {
             ...searchCriteria,
             [Op.or]: [
                 { name: { [Op.like]: `%${search}%` } },
                 { email: { [Op.like]: `%${search}%` } },
                 { identity: { [Op.like]: `%${search}%` } },
-                // Add more attributes here for searching
-                // Add phoneNumber as well
                 { phoneNumber: { [Op.like]: `%${search}%` } }
             ]
         };
-    } 
+    }
 
+    // Count total clients without pagination
+    const totalCount = await Client.count({ where: searchCriteria });
 
-        const clients=await  Client.findAndCountAll({
-            where:searchCriteria ,
-            include :  [{ model: ClientHistory , } ] , 
-            limit: perPage,
-            offset: offset,
-        });
+    // Fetch clients with pagination
+    const clients = await Client.findAll({
+        where: searchCriteria,
+        include: [{ model: ClientHistory }],
+        limit: perPage,
+        offset: offset,
+        order: [['createdAt', 'DESC']] // Order by createdAt in descending order
 
-        // Calculate total pages
-        const totalPages = Math.ceil(clients.count / perPage);
-        res.status(StatusCodes.OK).json({success:true,result:{totalCount:clients.count,totalPages: totalPages,
-            currentPage: page, perPage: perPage ,items :clients.rows}})
-}) 
+    });
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / perPage);
+
+    res.status(StatusCodes.OK).json({
+        success: true,
+        result: {
+            totalCount: totalCount,
+            totalPages: totalPages,
+            currentPage: page,
+            perPage: perPage,
+            items: clients
+        }
+    });
+});
+
 
 
 // update client

@@ -91,7 +91,7 @@ const login =catchAsyncError(async(req,res,next)=>{
            const match= await bcrypt.compare(password ,user.password);
             
            if (match) {
-            var token =jwt.sign({email,id:user.id,name:user.name , role:user.role , company_id:user.company_id},'jusuraltamayuz2332',{expiresIn:'8h'}) ;
+            var token =jwt.sign({email,id:user.id,name:user.name , role:user.role , company_id:user.company_id},'jusuraltamayuz2332',{expiresIn:'800h'}) ;
             var decode=jwt.decode(token ,'jusuraltamayuz2332') ;
  
             res.status(StatusCodes.OK).json({success: true,token,data:{id:user.id ,name : user.name},message : "Logged in successfully"})

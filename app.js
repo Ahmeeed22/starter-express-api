@@ -28,9 +28,15 @@ const carRoutes = require("./modules/cars/routes/car.routes");
 const Note = require("./modules/owners/model/notes.model");
 const notesRoutes = require("./modules/owners/routes/notes.route");
 
+const bodyParser = require('body-parser');
+
 const app =express();
 app.use(cors())
+// Parse JSON bodies
 app.use(express.json());
+
+// Parse URL-encoded bodies (form data)
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // wiston
 const logger=new LoggerService('user.controller')

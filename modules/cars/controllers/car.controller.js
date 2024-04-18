@@ -5,45 +5,45 @@ const Car = require("../model/car.model");
 
 
 // get all cars
-const getAllCars=catchAsyncError(async(req,res,next)=>{
+const getAllCars = catchAsyncError(async (req, res, next) => {
+    const page = req.query.page || 1;
+    const perPage = parseInt(req.query.per_page) || 1000;
+    const offset = (page - 1) * perPage;
 
-     // Parse query parameters
-     const page =  req.query.page||1;
-     const perPage = parseInt(req.query.per_page) || 1000; // Default per_page to 1000 if not provided
-     // Calculate offset based on page and perPage
-     const offset = (page - 1) * perPage;
-    // Define search criteria based on query parameter 'search'
     const search = req.query.search;
-
     let searchCriteria = {
         clientHistory_id: req.query.clientHistory_id
     };
-    if (req.query.search){
+
+    if (search) {
         searchCriteria = {
             ...searchCriteria,
-            // [Op.or]: [
-            //     { name: { [Op.like]: `%${search}%` } },
-            //     { email: { [Op.like]: `%${search}%` } },
-            //     { identity: { [Op.like]: `%${search}%` } },
-            //     // Add more attributes here for searching
-            //     // Add phoneNumber as well
-            //     { phoneNumber: { [Op.like]: `%${search}%` } }
-            // ]
+            // Include your search criteria here
         };
-    } 
+    }
 
+    const cars = await Car.findAndCountAll({ 
+        where: searchCriteria,
+        limit: perPage,
+        offset: offset,
+        order: [['createdAt', 'DESC']] // Order by createdAt in descending order
+    });
 
-        const cars=await  Car.findAndCountAll({ 
-            where:{clientHistory_id : req.query.clientHistory_id} ,
-            limit: perPage,
-            offset: offset,
-        });
+    // Calculate total pages
+    const totalPages = Math.ceil(cars.count / perPage);
 
-        // Calculate total pages
-        const totalPages = Math.ceil(cars.count / perPage);
-        res.status(StatusCodes.OK).json({success:true,result:{totalCount:cars.count,totalPages: totalPages,
-            currentPage: page, perPage: perPage ,items :cars.rows}})
-}) 
+    res.status(StatusCodes.OK).json({
+        success: true,
+        result: {
+            totalCount: cars.count,
+            totalPages: totalPages,
+            currentPage: page,
+            perPage: perPage,
+            items: cars.rows
+        }
+    });
+});
+
 
 
 // update car

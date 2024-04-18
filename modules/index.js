@@ -5,7 +5,7 @@ const createTable=()=>{
         ).then(async(result)=>{
             // await BankAccount.sync({ alter: true });
         console.log("connection success");
-    }).catch((err)=>{
+    }).catch((err)=>{ 
         console.log("err",err); 
         
     })  
