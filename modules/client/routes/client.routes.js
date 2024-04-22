@@ -19,7 +19,7 @@ clientRoutes.post('/Login',validateRequest(loginSchema),login);
 clientRoutes.post('/IsEmailAvailable',isEmailAvailable) ;
 clientRoutes.post('/IsIdentityAvailable',isIdentityAvailable) ;
 clientRoutes.post('/IsPhoneNumberAvailable',isPhoneNumberAvailable) ;
-clientRoutes.put('/ToggleActivation',isAuth('ALL'),toggleActivation) ;
+clientRoutes.get('/ToggleActivation',isAuth('ALL'),toggleActivation) ;
 
 
 module.exports=clientRoutes; 

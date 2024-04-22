@@ -66,14 +66,13 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
 // toggleActivation
 const toggleActivation=catchAsyncError( async (req , res , next)=>{
     let id =req.query.client_id ; 
-    let {active}=req.body ;
         let client=await User.findOne({
             where:{id}  } );
         if (!client) {
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
         }      
-        await User.update({active},{where:{id}})
-        res.status(StatusCodes.OK).json({success:true, message : `Client ${active? 'Activated':'Disactived'}`})
+        await User.update({active : !client.active},{where:{id}})
+        res.status(StatusCodes.OK).json({success:true, message : `Client ${!client.active? 'Activated':'Disactived'}`})
 })
 
 // update client
