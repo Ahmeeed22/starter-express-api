@@ -7,7 +7,9 @@ const AppError = require("../../../helpers/AppError");
 const { catchAsyncError } = require("../../../helpers/catchSync");
 const LoggerService = require("../../../services/logger.service");
 const Client = require("../../client/model/client.model");
+const Role = require("../../roles/model/roles.model");
 const logger=new LoggerService('user.controller')
+
 
 
 
@@ -48,7 +50,7 @@ const updateUser=catchAsyncError(async(req,res,next)=>{
 const getCurrentLoginInformations=catchAsyncError(async(req,res,next)=>{
         let id=req.loginData.id;
         console.log(id); 
-        let user=await User.findOne({where:{id}});
+        let user=await User.findOne({where:{id} , include : [{model : Role}]});
         res.status(StatusCodes.OK).json({success: true ,result : {...user?.dataValues , permissions : JSON.parse(user.permissions)},message : "Current User information got successfully"}); 
    
 })
