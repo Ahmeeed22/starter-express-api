@@ -98,7 +98,7 @@ const addUser=catchAsyncError(async(req,res,next)=>{
 const login =catchAsyncError(async(req,res,next)=>{
     const {email , password} = req.body ;
         const user= await User.findOne({where:{email : email}}) ;
-        if (user) {
+        if (user && user.active) {
            const match= await bcrypt.compare(password ,user.password);
             
            if (match) {
