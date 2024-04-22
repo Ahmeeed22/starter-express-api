@@ -8,6 +8,7 @@ const { catchAsyncError } = require("../../../helpers/catchSync");
 const LoggerService = require("../../../services/logger.service");
 const ClientHistory = require("../../clinetHistory/model/clientHistory.model");
 const { log } = require("console");
+const User = require("../../users/model/user.model");
 
 const logger=new LoggerService('user.controller')
 
@@ -20,7 +21,7 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
     const search = req.query.search;
 
     let searchCriteria = {
-        admin_id: req.loginData.id
+        admin_id: req.loginData.id ,
     };
 
     if (req.query.search) {
@@ -36,12 +37,11 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
     }
 
     // Count total clients without pagination
-    const totalCount = await Client.count({ where: searchCriteria });
+    const totalCount = await User.count({ where: searchCriteria });
 
     // Fetch clients with pagination
-    const clients = await Client.findAll({
+    const clients = await User.findAll({
         where: searchCriteria,
-        include: [{ model: ClientHistory }],
         limit: perPage,
         offset: offset,
         order: [['createdAt', 'DESC']] // Order by createdAt in descending order
@@ -63,18 +63,29 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
     });
 });
 
-
+// toggleActivation
+const toggleActivation=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.client_id ; 
+    let {active}=req.body ;
+        let client=await User.findOne({
+            where:{id}  } );
+        if (!client) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await User.update({active},{where:{id}})
+        res.status(StatusCodes.OK).json({success:true, message : `Client ${active? 'Activated':'Disactived'}`})
+})
 
 // update client
 const updateClient=catchAsyncError(async(req,res,next)=>{
 
         let id=req.params.id;
-        let client=await Client.findOne({
+        let client=await User.findOne({
             where:{id}  } );
         if (!client) {
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
         }      
-        await Client.update({...req.body , admin_id : req.loginData.id},{where:{id}})
+        await User.update({...req.body , admin_id : req.loginData.id},{where:{id}})
         res.status(StatusCodes.OK).json({success:true, message : "Updated Client Successfully"})
 
 }) 
@@ -82,12 +93,18 @@ const updateClient=catchAsyncError(async(req,res,next)=>{
 // get single client
 const getSingleClient=catchAsyncError(async(req,res,next)=>{
         let id=req.params.id;
-        let client=await Client.findOne({
+        let client=await User.findOne({
                                             where:{id} ,
-                                            include :  [{ model: ClientHistory , } ]
+                                            include: [
+                                                {
+                                                    model: Client,
+                                                    include: [ClientHistory] // Include the nested association ClientHistory
+                                                }
+                                            ]
                                         } , );
+                                        
         res.status(StatusCodes.OK).json({success:true,result:client});
-   
+    
 })
 // search
 const search=catchAsyncError(async(req,res,next)=>{
@@ -110,30 +127,30 @@ const search=catchAsyncError(async(req,res,next)=>{
 // add client
 const addClient=catchAsyncError(async(req,res,next)=>{
     const password = req.body.name + 137
-        let client= await  Client.findOne({where:{email:req.body.email}});
+        let client= await  User.findOne({where:{email:req.body.email}});
         if (client) {
             res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
         } 
         // Check if the phoneNumber already exists
-        client = await Client.findOne({ where: { phoneNumber : req.body.phoneNumber} });
+        client = await User.findOne({ where: { phoneNumber : req.body.phoneNumber} });
         if (client) {
              res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message: "Phone number already exists" });
         }
 
         // Check if the identity already exists
-        client = await Client.findOne({ where: { identity : req.body.identity} });
+        client = await User.findOne({ where: { identity : req.body.identity} });
         if (client) {
              res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message: "Identity already exists" });
         }
 
 
-            bcrypt.hash(password,7, async (err,hash)=>{
-                if(err) throw err
-                let data  = {...req.body , password:hash , admin_id : req.loginData?.id}
-                console.log("###################### &&&&&&&&&&&&&&&&&& ",data ,"$$$$$$$$$ ",req.loginData);
-                var result= await Client.create(data)
-                 res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"})
-            })
+        bcrypt.hash(password,7, async (err,hash)=>{
+            if(err) throw err
+            let data  = {...req.body , password:hash , admin_id : req.loginData?.id};
+            var result= await User.create({...data, role_id:2}) ;
+            var client = await Client.create({company_id:1,user_id:result.id})
+             res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"}) 
+        })
         
 })
 // login
@@ -160,9 +177,9 @@ const login =catchAsyncError(async(req,res,next)=>{
 // check unique email 
 const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
     const { email } = req.body;
-    const existingClient = await Client.findOne({ where: { email } });
+    const existingClient = await User.findOne({ where: { email } });
         if (existingClient) {
-            return res.status(400).json({ success : true ,result: false });
+            return res.status(200).json({ success : true ,result: false });
         }else{
             return res.status(200).json({ success : true ,result: true });
         }
@@ -172,9 +189,9 @@ const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
 // check unique phone Number 
 const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
     const { phoneNumber , countryCode} = req.body;
-    const existingClient = await Client.findOne({ where: { phoneNumber : phoneNumber , countryCode} });
+    const existingClient = await User.findOne({ where: { phoneNumber : phoneNumber , countryCode} });
         if (existingClient) {
-            return res.status(400).json({ success : true ,result: false });
+            return res.status(200).json({ success : true ,result: false });
         }else{
             return res.status(200).json({ success : true ,result: true });
         }
@@ -183,12 +200,12 @@ const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
 // check unique phone Number 
 const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
     const { identity } = req.body;
-    const existingClient = await Client.findOne({ where: { identity } });
+    const existingClient = await User.findOne({ where: { identity } });
         if (existingClient) {
-            return res.status(400).json({ success : true ,result: false });
+            return res.status(200).json({ success : true ,result: false });
         }else{
             return res.status(200).json({ success : true ,result: true });
         }
 })
 
-module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login ,isEmailAvailable ,isPhoneNumberAvailable , isIdentityAvailable}
+module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login ,isEmailAvailable ,isPhoneNumberAvailable , isIdentityAvailable , toggleActivation}

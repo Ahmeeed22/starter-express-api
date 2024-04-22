@@ -6,23 +6,26 @@ const User=sequelize.define("user",{
         autoIncrement: true,
         primaryKey: true
     },
-    name: {
+    identity: {
         type: Sequelize.STRING,
-        allowNull: false,
-      },
+        unique: true, 
+    },
+    birthDate: {
+        type: Sequelize.DATEONLY,
+    },
+    phoneNumber: {
+        type: Sequelize.STRING,
+        unique: true,
+    } ,
+    countryCode : {
+        type : Sequelize.STRING,
+        defaultValue : "+966"
+    },
     email: {
         type: Sequelize.STRING,
       },
     password: {
         type: Sequelize.STRING,
-      },
-      roleId : {
-        type :Sequelize.INTEGER,
-        defaultValue : 1
-      },
-      role: {
-        type: Sequelize.STRING,
-        defaultValue : "Admin"
       },
       active:{
         type: Sequelize.BOOLEAN,
@@ -32,13 +35,17 @@ const User=sequelize.define("user",{
       type: Sequelize.TEXT, // Assuming TEXT data type for JSON serialization
       defaultValue: JSON.stringify(['Pages.Client.List','Pages.Client.Edit','Pages.Statistics','Pages.Client.Add','Pages.ClientHistory.List','Pages.ClientHistory.Add','Pages.ClientHistory.Edit','Pages.Employee.List','Pages.Employee.Edit','Pages.Employee.Delete','Pages.Employee.Add','Pages.Car.Add','Pages.Car.Edit','Pages.Car.List','Pages.Car.Delete']), // Default value as JSON string
       allowNull: false 
+    } ,
+    admin_id: {
+      type: Sequelize.INTEGER,
+      allowNull: true // Allow null for users of type 'Admin'
     }
 })
 
 // Hook before create user to hash password
 User.beforeCreate(async (user, options) => {
   console.log("hoooooooooks " , user.email );   
-});
+}); 
 
 
 module.exports=User;

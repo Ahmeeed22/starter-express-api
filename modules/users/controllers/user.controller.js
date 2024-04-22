@@ -67,26 +67,35 @@ const search=catchAsyncError(async(req,res,next)=>{
 })
 // add user
 const addUser=catchAsyncError(async(req,res,next)=>{
-    const {password} = req.body
-    console.log("###############################################################",req.body);
+    const {password , role_id , name} = req.body
         const user= await  User.findOne({where:{email:req.body.email}});
         if (user) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message:"email is exit"})
         } else {
-            bcrypt.hash(password,7, async (err,hash)=>{
-                if(err) throw err
-                var result= await User.create({...req.body, permissions: JSON.stringify(req.body.permissions) , password:hash})
-                 res.status(StatusCodes.CREATED).json({message:"success",result})
-            })
+            //
+            if(role_id == 1){
+                bcrypt.hash(password,7, async (err,hash)=>{
+                    if(err) throw err
+                    var result= await User.create({...req.body, permissions: JSON.stringify(req.body.permissions) , password:hash})
+                     res.status(StatusCodes.CREATED).json({message:"success",result})
+                })
+            }else if(role_id == 2){
+                const passwordNew = name + 137 ;
+                bcrypt.hash(passwordNew,7, async (err,hash)=>{
+                    if(err) throw err
+                    let data  = {...req.body , password:hash , admin_id : req.loginData?.id};
+                    var result= await User.create(data) ;
+                    var client = await Client.create({company_id:1})
+                     res.status(StatusCodes.CREATED).json({success:true,result:{result , client}, message : "Created Client Successfully"})
+                })
+            }
         }
 })
 
 // login
 const login =catchAsyncError(async(req,res,next)=>{
     const {email , password} = req.body ;
-        console.log(email);
         const user= await User.findOne({where:{email : email}}) ;
-        console.log("USER === ",user);
         if (user) {
            const match= await bcrypt.compare(password ,user.password);
             
@@ -103,6 +112,29 @@ const login =catchAsyncError(async(req,res,next)=>{
         } else {
             next(new AppError('email not found',400))
         }
-})
+}) ;
 
-module.exports={getAllUsers,deleteUser,addUser,updateUser,getCurrentLoginInformations,search , login}
+const changePassword = catchAsyncError(async (req, res, next) => {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.loginData.id; // Assuming you have middleware to extract user ID from the request
+    // Fetch the user from the database
+    const user = await User.findOne({ where: { id: userId } });
+    // Check if the user exists
+    if (!user) {
+        return next(new AppError('User not found', 404));
+    }
+    // Verify if the current password matches the one stored in the database
+    const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!passwordMatch) {
+        return next(new AppError('Current password is incorrect', 400));
+    }
+    // Hash the new password
+    bcrypt.hash(newPassword,7, async (err,hash)=>{
+        if(err) throw err
+        await User.update({ password: hash }, { where: { id: userId } });
+        res.status(StatusCodes.OK).json({ success: true, message: 'Password updated successfully' });
+    })
+});
+
+
+module.exports={getAllUsers,deleteUser,addUser,updateUser,getCurrentLoginInformations,search , login , changePassword}

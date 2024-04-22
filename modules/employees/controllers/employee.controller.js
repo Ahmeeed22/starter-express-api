@@ -90,7 +90,7 @@ const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
     const { identity } = req.body;
     const existingClient = await Employee.findOne({ where: { identity } });
         if (existingClient) {
-            return res.status(400).json({success : true , result: false });
+            return res.status(200).json({success : true , result: false });
         }else{
             return res.status(200).json({ success : true ,result: true });
         }

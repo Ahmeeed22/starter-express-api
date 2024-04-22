@@ -42,15 +42,16 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
 
 
 const addClientHistory = catchAsyncError(async (req, res, next) => {
+
         let clientHistoryy= await  ClientHistory.findOne({where:{number:req.body.number}});
         if (clientHistoryy) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"number is exit"})
         } 
-        let client= await  Client.findOne({where:{id:req.query.client_id}});
+        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
         if (! client) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"please select correct parent client"})
         }
-        var clientHistory = await ClientHistory.create({...req.body, client_id : req.query.client_id});
+        var clientHistory = await ClientHistory.create({...req.body, client_id : client.id});
         res.status(StatusCodes.CREATED).json({success:true, message: "client history added successfully", result: clientHistory })
 
 }) 
@@ -112,7 +113,7 @@ const isNumberAvailable =catchAsyncError(async(req,res,next)=>{
     const { number} = req.body;
     const existingClientHistory = await ClientHistory.findOne({ where: { number } });
         if (existingClientHistory) {
-            return res.status(400).json({ success : true ,result: false });
+            return res.status(200).json({ success : true ,result: false });
         }else{
             return res.status(200).json({ success : true ,result: true });
         }

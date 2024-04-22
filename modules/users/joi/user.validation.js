@@ -10,7 +10,7 @@ module.exports = {
                 "string.email":"sorry ...please enter valid email"
             }),
             password :Joi.string().min(6).required(),
-            role : Joi.number().default(1),
+            role_id : Joi.number().default(1),
             
             permissions: Joi.array().items(Joi.string()).default(['Pages.Client.List','Pages.Client.Edit','Pages.Statistics','Pages.Client.Add','Pages.ClientHistory.List','Pages.ClientHistory.Add','Pages.ClientHistory.Edit','Pages.Employee.List','Pages.Employee.Edit','Pages.Employee.Delete','Pages.Employee.Add','Pages.Car.Add','Pages.Car.Edit','Pages.Car.List','Pages.Car.Delete']),
         })

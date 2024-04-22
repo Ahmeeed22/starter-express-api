@@ -25,10 +25,11 @@ const Employee = require("./modules/employees/model/employee.model");
 const employeeRoutes = require("./modules/employees/routes/employee.routes");
 const Car = require("./modules/cars/model/car.model");
 const carRoutes = require("./modules/cars/routes/car.routes");
-const Note = require("./modules/owners/model/notes.model");
-const notesRoutes = require("./modules/owners/routes/notes.route");
-
 const bodyParser = require('body-parser');
+const Note = require("./modules/notes/model/notes.model");
+const notesRoutes = require("./modules/notes/routes/notes.route");
+const rolesRoutes = require("./modules/roles/routes/roles.route");
+const Role = require("./modules/roles/model/roles.model");
 
 const app =express();
 app.use(cors())
@@ -43,6 +44,30 @@ const logger=new LoggerService('user.controller')
 const loggerError=new LoggerService('error.general')
 const loggerRoute=new LoggerService('error.route')
 
+    // Define association between User and Client for a one-to-one relationship
+    User.hasOne(Client, {
+        foreignKey: {
+        name: 'user_id',
+        allowNull: false,
+        unique: true // Ensure one-to-one relationship
+        },
+        onDelete: 'CASCADE'
+    });
+    Client.belongsTo(User, {
+        foreignKey: 'user_id'
+    });
+
+    // relation between role and user
+    User.belongsTo(Role, {
+        foreignKey: 'role_id'
+        });
+    Role.hasMany(User, {
+    foreignKey: 'role_id'
+    });
+    
+    // Define self-referential association for admin-user relationship
+    User.belongsTo(User, { as: 'Admin', foreignKey: 'admin_id' });
+    User.hasMany(User, { as: 'Clients', foreignKey: 'admin_id' });
 
     Company.hasMany(Client,{
         foreignKey :'company_id'
@@ -50,14 +75,6 @@ const loggerRoute=new LoggerService('error.route')
     Client.belongsTo(Company, { 
         foreignKey: 'company_id', 
     });
-
-    User.hasMany(Client,{
-        foreignKey :'admin_id'
-    }) ;
-    Client.belongsTo(User, { 
-        foreignKey: 'admin_id',
-    });
-
 
     Client.hasMany(ClientHistory,{
         foreignKey : 'client_id' 
@@ -86,9 +103,9 @@ const loggerRoute=new LoggerService('error.route')
     Note.belongsTo(Client, { 
         foreignKey: 'client_id', 
     });
-   
 
-  
+
+
  
 app.use(cookieParser());
 createTable();
@@ -100,6 +117,7 @@ app.use('/api/v1/ClientHistory',clientHistoryRoutes)
 app.use('/api/v1/Employee',employeeRoutes);
 app.use('/api/v1/Car',carRoutes);
 app.use('/api/v1/Note',notesRoutes);
+app.use('/api/v1/Role',rolesRoutes);
 
 
 

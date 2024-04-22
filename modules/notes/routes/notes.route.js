@@ -1,9 +1,9 @@
 const isAuth = require('../../../common/middleare/isAuth');
-const { createNote } = require('../controller/notes.controller');
+const { createNote, getClientNotes } = require('../controller/notes.controller');
 
 const notesRoutes=require('express').Router() ;
 
-// notesRoutes.post("/getAllOwners",isAuth('ALL'),getAllOwners) ;
+notesRoutes.get("/GetAllClientNotes",isAuth('ALL'),getClientNotes) ;
 notesRoutes.post("/AddNote",isAuth('ALL'),createNote) ;
 // notesRoutes.get("/getCapitalAndOwnerDrawing",isAuth('ALL'),getCapitalAndOwnerDrawing)
 
