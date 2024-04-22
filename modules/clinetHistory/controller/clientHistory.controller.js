@@ -12,7 +12,7 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
     if (req.query.client_id) {
         clientId = req.query.client_id
     }else{
-        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        let client= await  Client.findOne({where:{user_id:req.loginData.id}});
         clientId = client.id
     }
     let searchCriteria = {
