@@ -18,9 +18,14 @@ const createNote =catchAsyncError(async (req, res) => {
 
 // get single client notes
 const getClientNotes=catchAsyncError(async(req,res,next)=>{
-    let client_id=req.query.client_id;
+    var clientId ;
+    if (req.query.client_id) {
+        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        clientId = client.id
+    }
+
     let notes=await Note.findAndCountAll({
-                                        where:{client_id} ,
+                                        where:{client_id:clientId} ,
                                         order: [['createdAt', 'DESC']] // Order by createdAt in descending order
                                     } , );
     res.status(StatusCodes.OK).json({success: true,
