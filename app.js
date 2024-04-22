@@ -30,6 +30,7 @@ const Note = require("./modules/notes/model/notes.model");
 const notesRoutes = require("./modules/notes/routes/notes.route");
 const rolesRoutes = require("./modules/roles/routes/roles.route");
 const Role = require("./modules/roles/model/roles.model");
+const profileRoutes = require("./modules/profile/routes/profile.routes");
 
 const app =express();
 app.use(cors())
@@ -118,6 +119,7 @@ app.use('/api/v1/Employee',employeeRoutes);
 app.use('/api/v1/Car',carRoutes);
 app.use('/api/v1/Note',notesRoutes);
 app.use('/api/v1/Role',rolesRoutes);
+app.use('/api/v1/Profile',profileRoutes);
 
 
 
