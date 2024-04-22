@@ -10,7 +10,8 @@ const Client = require("../../client/model/client.model");
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
     var clientId ;
     if (req.query.client_id) {
-        clientId = req.query.client_id
+        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        clientId = client.id
     }else{
         let client= await  Client.findOne({where:{user_id:req.loginData.id}});
         clientId = client.id
