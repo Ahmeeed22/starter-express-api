@@ -17,7 +17,7 @@ const createNote =catchAsyncError(async (req, res) => {
 })  ;
 
 // get single client notes
-const getClientNotes=catchAsyncError(async(req,res,next)=>{
+const getClientNote=catchAsyncError(async(req,res,next)=>{
     var clientId ;
     if (req.query.client_id) {
         let client= await  Client.findOne({where:{user_id:req.query.client_id}});
@@ -40,4 +40,40 @@ const getClientNotes=catchAsyncError(async(req,res,next)=>{
 
 })
 
-module.exports ={createNote , getClientNotes}  ;
+const getClientNotes = catchAsyncError(async (req, res, next) => {
+    var clientId;
+    if (req.query.client_id) {
+        let client = await Client.findOne({ where: { user_id: req.query.client_id } });
+        clientId = client.id;
+    } else {
+        let client = await Client.findOne({ where: { user_id: req.loginData.id } });
+        clientId = client.id;
+    }
+
+    const page = req.query.page || 1;
+    const per_page = parseInt(req.query.per_page) || 10; // Default per_page to 10 if not provided
+    const offset = (page - 1) * per_page;
+
+    let notes = await Note.findAndCountAll({
+        where: { client_id: clientId },
+        order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+        limit: per_page,
+        offset: offset
+    });
+
+    const totalPages = Math.ceil(notes.count / per_page);
+    res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Getting Notes Successfully",
+        result: {
+            totalCount: notes.count,
+            totalPages: totalPages,
+            currentPage: page,
+            per_page: per_page,
+            items: notes.rows
+        },
+    });
+});
+
+
+module.exports ={createNote , getClientNotes}  ; 
