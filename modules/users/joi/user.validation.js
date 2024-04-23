@@ -32,7 +32,6 @@ module.exports = {
             email : Joi.string().email().messages({
                 "string.email":"sorry ...please enter valid email"
             }),
-            password :Joi.string().min(6),
             role : Joi.number().default(1),
             company_id:Joi.number().required().min(0) , 
             permissions: Joi.array().items(Joi.string()).default(['Pages.Client.List']),

@@ -10,6 +10,10 @@ const User=sequelize.define("user",{
         type: Sequelize.STRING,
         unique: true, 
     },
+    name: {
+        type: Sequelize.STRING,
+        defaultValue: "user", 
+    },
     birthDate: {
         type: Sequelize.DATEONLY,
     },
