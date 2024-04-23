@@ -56,11 +56,12 @@ const addClientHistory = catchAsyncError(async (req, res, next) => {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"number is exit"})
         } 
         let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        console.log("%%%%%%% ^^^^^^^^^ ",client);
         if (! client) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"please select correct parent client"})
         }
         var clientHistory = await ClientHistory.create({...req.body, client_id : client.id});
-        res.status(StatusCodes.CREATED).json({success:true, message: "client history added successfully", result: clientHistory })
+        res.status(StatusCodes.OK).json({success:true, message: "client history added successfully", result: clientHistory })
 
 }) 
 

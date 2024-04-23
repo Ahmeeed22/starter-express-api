@@ -81,7 +81,7 @@ const addEmp=catchAsyncError(async(req,res,next)=>{
             res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit "})
         } else {
                 var result= await Employee.create({...req.body,healthCertificate:"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401",iqamaImage : "https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"})
-                 res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Employee Successfully"})
+                 res.status(StatusCodes.OK).json({success:true,result, message : "Created Employee Successfully"})
         }
 })
 

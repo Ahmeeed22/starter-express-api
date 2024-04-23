@@ -148,7 +148,7 @@ const addClient=catchAsyncError(async(req,res,next)=>{
             let data  = {...req.body , password:hash , admin_id : req.loginData?.id};
             var result= await User.create({...data, role_id:2}) ;
             var client = await Client.create({company_id:1,user_id:result.id})
-             res.status(StatusCodes.CREATED).json({success:true,result, message : "Created Client Successfully"}) 
+             res.status(StatusCodes.OK).json({success:true,result, message : "Created Client Successfully"}) 
         })
         
 })

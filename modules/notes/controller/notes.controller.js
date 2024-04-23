@@ -12,7 +12,7 @@ const createNote =catchAsyncError(async (req, res) => {
     let client = await Client.findOne({where:{user_id:user.id}})
 
         var result= await Note.create({desc:req.body.desc ,client_id : client.id })
-        res.status(StatusCodes.CREATED).json({ message: "Your Note send Successfully ", result: result ,success :true })
+        res.status(StatusCodes.OK).json({ message: "Your Note send Successfully ", result: result ,success :true })
 
 })  ;
 
