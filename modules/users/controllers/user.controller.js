@@ -8,6 +8,7 @@ const { catchAsyncError } = require("../../../helpers/catchSync");
 const LoggerService = require("../../../services/logger.service");
 const Client = require("../../client/model/client.model");
 const Role = require("../../roles/model/roles.model");
+const { use } = require("../routes/user.routes");
 const logger=new LoggerService('user.controller')
 
 
@@ -98,7 +99,13 @@ const addUser=catchAsyncError(async(req,res,next)=>{
 const login =catchAsyncError(async(req,res,next)=>{
     const {email , password} = req.body ;
         const user= await User.findOne({where:{email : email}}) ;
-        if (user && user.active) {
+        if (user ) {
+            if(!user.active){
+                res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit ",data:{
+                    id :user.id , active:user.active
+                }})
+            }
+
            const match= await bcrypt.compare(password ,user.password);
             
            if (match) {

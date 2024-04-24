@@ -10,7 +10,7 @@ const Client = require("../../client/model/client.model");
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
     var clientId ;
     if (req.query.client_id) {
-        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        let client= await  Client.findOne({where:{id:req.query.client_id}});
         clientId = client.id
     }else{
         let client= await  Client.findOne({where:{user_id:req.loginData.id}});
@@ -55,7 +55,7 @@ const addClientHistory = catchAsyncError(async (req, res, next) => {
         if (clientHistoryy) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"number is exit"})
         } 
-        let client= await  Client.findOne({where:{user_id:req.query.client_id}});
+        let client= await  Client.findOne({where:{id:req.query.client_id}});
         console.log("%%%%%%% ^^^^^^^^^ ",client);
         if (! client) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false,message:"please select correct parent client"})
@@ -78,7 +78,7 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
 
         var clientHistory = await ClientHistory.update(updateData, { where: { id } }) ; 
         res.status(StatusCodes.OK).json({ success : true,message: "Updated Client History Successfully", result: clientHistory  })
-})
+}) ;
 
 // search
 const searchClientHistorys = catchAsyncError(async (req, res, next) => {

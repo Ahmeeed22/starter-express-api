@@ -44,10 +44,18 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
         where: searchCriteria,
         limit: perPage,
         offset: offset,
-        order: [['createdAt', 'DESC']] // Order by createdAt in descending order
+        order: [['createdAt', 'DESC']], // Order by createdAt in descending order
+        include : [ {model: Client}]
 
     });
 
+    // Map through the items and replace 'id' with 'client.id'
+    const updatedClients = clients.map(client => {
+        return {
+            ...client.toJSON(),
+            id: client.client.id
+        };
+    });
     // Calculate total pages
     const totalPages = Math.ceil(totalCount / perPage);
 
@@ -58,7 +66,7 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
             totalPages: totalPages,
             currentPage: page,
             perPage: perPage,
-            items: clients
+            items: updatedClients
         }
     });
 });
@@ -66,6 +74,7 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
 // toggleActivation
 const toggleActivation=catchAsyncError( async (req , res , next)=>{
     let id =req.query.client_id ; 
+
         let client=await User.findOne({
             where:{id}  } );
         if (!client) {
@@ -79,12 +88,13 @@ const toggleActivation=catchAsyncError( async (req , res , next)=>{
 const updateClient=catchAsyncError(async(req,res,next)=>{
 
         let id=req.params.id;
+        let clientBase = await Client.findOne({where :{id}})
         let client=await User.findOne({
-            where:{id}  } );
+            where:{id:clientBase.user_id}  } );
         if (!client) {
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
         }      
-        await User.update({...req.body , admin_id : req.loginData.id},{where:{id}})
+        await User.update({...req.body , admin_id : req.loginData.id},{where:{id:clientBase.user_id}})
         res.status(StatusCodes.OK).json({success:true, message : "Updated Client Successfully"})
 
 }) 
@@ -92,8 +102,9 @@ const updateClient=catchAsyncError(async(req,res,next)=>{
 // get single client
 const getSingleClient=catchAsyncError(async(req,res,next)=>{
         let id=req.params.id;
+        let clientBase = await Client.findOne({where :{id}})
         let client=await User.findOne({
-                                            where:{id} ,
+                                            where:{id:clientBase.user_id} ,
                                             include: [
                                                 {
                                                     model: Client,
@@ -102,7 +113,7 @@ const getSingleClient=catchAsyncError(async(req,res,next)=>{
                                             ]
                                         } , );
                                         
-        res.status(StatusCodes.OK).json({success:true,result:client});
+        res.status(StatusCodes.OK).json({success:true,result:{...client.toJSON(),id:clientBase.id,user_id:client.id}});
     
 })
 // search
@@ -148,7 +159,7 @@ const addClient=catchAsyncError(async(req,res,next)=>{
             let data  = {...req.body , password:hash , admin_id : req.loginData?.id};
             var result= await User.create({...data, role_id:2}) ;
             var client = await Client.create({company_id:1,user_id:result.id})
-             res.status(StatusCodes.OK).json({success:true,result, message : "Created Client Successfully"}) 
+             res.status(StatusCodes.OK).json({success:true,result:{email:req.body.email,phoneNumber:req.body.phoneNumber,identity:req.body.identity}, message : "Created Client Successfully"}) 
         })
         
 })
@@ -188,7 +199,7 @@ const isEmailAvailable =catchAsyncError(async(req,res,next)=>{
 // check unique phone Number 
 const isPhoneNumberAvailable =catchAsyncError(async(req,res,next)=>{
     const { phoneNumber , countryCode} = req.body;
-    const existingClient = await User.findOne({ where: { phoneNumber : phoneNumber , countryCode} });
+    const existingClient = await User.findOne({ where: { phoneNumber : phoneNumber } });
         if (existingClient) {
             return res.status(200).json({ success : true ,result: false });
         }else{
