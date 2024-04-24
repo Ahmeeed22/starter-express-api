@@ -1,7 +1,7 @@
 const isAuth = require('../../../common/middleare/isAuth');
 const carRoutes=require('express').Router() ;
 const validateRequest = require("../../../common/middleare/validationRequest")
-const { addCar , deleteCar , getAllCars , getSingleCar , updateCar } = require("../controllers/car.controller");
+const { addCar , deleteCar , getAllCars , getSingleCar , updateCar, toggleActivation } = require("../controllers/car.controller");
 const { addCarSchema , updateCarSchema} = require('../joi/car.validation');
 
 carRoutes.get('/AllCars',isAuth('ALL'),getAllCars) 
@@ -10,5 +10,7 @@ carRoutes.put('/UpdateCar',validateRequest(updateCarSchema),isAuth('ALL'),update
 carRoutes.delete('/DeleteCar',isAuth('ALL'),deleteCar) ;
 carRoutes.get('/GetSingleCar',isAuth('ALL'),getSingleCar) ;
 // carRoutes.post('/IsWorkPermitCardAvailable',isWorkPermitCardAvailable) ; 
+carRoutes.get('/ToggleActivation',isAuth('ALL'),toggleActivation) ;
+
 
 module.exports=carRoutes;

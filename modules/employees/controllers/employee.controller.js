@@ -20,14 +20,11 @@ const getAllEmps = catchAsyncError(async (req, res, next) => {
         searchCriteria = {
             ...searchCriteria,
             // Uncomment this block if you want to include search functionality
-            // [Op.or]: [
-            //     { name: { [Op.like]: `%${search}%` } },
-            //     { email: { [Op.like]: `%${search}%` } },
-            //     { identity: { [Op.like]: `%${search}%` } },
-            //     // Add more attributes here for searching
-            //     // Add phoneNumber as well
-            //     { phoneNumber: { [Op.like]: `%${search}%` } }
-            // ]
+            [Op.or]: [
+                { identity: { [Op.like]: `%${search}%` } },
+                { healthCertificate: { [Op.like]: `%${search}%` } },
+                { name: { [Op.like]: `%${search}%` }  }
+            ]
         };
     }
 
@@ -109,5 +106,15 @@ const deleteEmp=catchAsyncError(async(req,res,next)=>{
     })
     res.status(StatusCodes.OK).json({ success : true , message:" Deleted Employee success"})
 })
-
-module.exports={getAllEmps , addEmp , updateEmp , getSingleEmp , isIdentityAvailable , deleteEmp}
+// toggleActivation
+const toggleActivation=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+        let employee=await Employee.findOne({
+            where:{id}  } );
+        if (!employee) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await Employee.update({active : !client.active},{where:{id:id}})
+        res.status(StatusCodes.OK).json({success:true, message : `employee ${!client.active? 'Activated':'Disactived'}`})
+})
+module.exports={getAllEmps , addEmp , updateEmp , getSingleEmp , isIdentityAvailable , deleteEmp,toggleActivation}

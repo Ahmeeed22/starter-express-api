@@ -18,9 +18,14 @@ const getAllCars = catchAsyncError(async (req, res, next) => {
     if (search) {
         searchCriteria = {
             ...searchCriteria,
+            [Op.or]: [
+                { workPermitCard: { [Op.like]: `%${search}%` } }
+            ]
             // Include your search criteria here
         };
     }
+
+    
 
     const cars = await Car.findAndCountAll({ 
         where: searchCriteria,
@@ -102,5 +107,16 @@ const deleteCar=catchAsyncError(async(req,res,next)=>{
     })
     res.status(StatusCodes.OK).json({ success : true , message:" Deleted Car success"})
 }) ;
+// toggleActivation
+const toggleActivation=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+        let car=await Car.findOne({
+            where:{id}  } );
+        if (!car) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await Car.update({active : !client.active},{where:{id:id}})
+        res.status(StatusCodes.OK).json({success:true, message : `Car ${!client.active? 'Activated':'Disactived'}`})
+})
 
-module.exports={deleteCar , addCar , updateCar , getAllCars , getSingleCar}
+module.exports={deleteCar , addCar , updateCar , getAllCars , getSingleCar , toggleActivation}

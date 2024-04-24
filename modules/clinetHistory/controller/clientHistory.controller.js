@@ -20,6 +20,15 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
         client_id: clientId,
         active: true  
     };
+    if (req.query.search) {
+        searchCriteria = {
+            ...searchCriteria,
+            [Op.or]: [
+                { name: { [Op.like]: `%${search}%` } },
+                { number: { [Op.like]: `%${search}%` } },
+            ]
+        };
+    }
     const page = req.query.page || 1;
     const perPage = parseInt(req.query.per_page) || 1000; // Default per_page to 1000 if not provided
     // Calculate offset based on page and perPage

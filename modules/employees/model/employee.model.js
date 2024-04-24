@@ -17,8 +17,7 @@ const Employee = sequelize.define("employee", {
     },
     healthCertificate: {
         type: Sequelize.STRING ,
-        allowNull: false,
-        defaultValue : "https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"
+        allowNull: false
     },
     expiryDate: {
         type: Sequelize.DATEONLY ,

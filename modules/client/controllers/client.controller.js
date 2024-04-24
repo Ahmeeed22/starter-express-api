@@ -1,5 +1,5 @@
 const Client = require("../model/client.model");
-const {Op}=require("sequelize");
+const {Op, where}=require("sequelize");
 const bcrypt = require('bcrypt')
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
@@ -74,13 +74,13 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
 // toggleActivation
 const toggleActivation=catchAsyncError( async (req , res , next)=>{
     let id =req.query.client_id ; 
-
+    const userBased = await Client.findOne({where : {id : id}})
         let client=await User.findOne({
-            where:{id}  } );
+            where:{id:userBased.user_id}  } );
         if (!client) {
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
         }      
-        await User.update({active : !client.active},{where:{id}})
+        await User.update({active : !client.active},{where:{id:client.id}})
         res.status(StatusCodes.OK).json({success:true, message : `Client ${!client.active? 'Activated':'Disactived'}`})
 })
 
