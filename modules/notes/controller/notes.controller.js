@@ -23,8 +23,8 @@ const getClientNote=catchAsyncError(async(req,res,next)=>{
     //     let client= await  Client.findOne({where:{user_id:req.query.client_id}});
     //     clientId = client.id
     // }else{
-        let client= await  Client.findOne({where:{user_id:req.loginData.id}});
-        clientId = client.id
+        // let client= await  Client.findOne({where:{user_id:req.loginData.id}});
+        // clientId = client.id
     // }
 
     let notes=await Note.findAndCountAll({
