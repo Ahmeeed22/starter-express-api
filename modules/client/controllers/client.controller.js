@@ -136,7 +136,7 @@ const search=catchAsyncError(async(req,res,next)=>{
 })
 // add client
 const addClient=catchAsyncError(async(req,res,next)=>{
-    const password = req.body.name + 137
+    const password = req.body.name.replace(/\s/g, '')+137
         let client= await  User.findOne({where:{email:req.body.email}});
         if (client) {
             res.status(StatusCodes.BAD_REQUEST).json({message:"email is exit"})
