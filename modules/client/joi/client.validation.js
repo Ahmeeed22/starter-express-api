@@ -25,6 +25,7 @@ module.exports = {
                     "date.base": "Sorry, birth date must be in a valid ISO format"
                 }), 
                 company_id:Joi.number().min(0) ,
+                active:Joi.boolean() ,
             })
     },
     loginSchema : {
@@ -58,7 +59,8 @@ module.exports = {
             }),
             birthDate: Joi.date().iso().messages({
                 "date.base": "Sorry, birth date must be in a valid ISO format"
-            })
+            }),
+            active:Joi.boolean() 
         }).min(1)
     }
 }

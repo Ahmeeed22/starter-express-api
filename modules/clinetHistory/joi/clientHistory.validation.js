@@ -23,7 +23,8 @@ module.exports = {
                 businessLicense: Joi.string().allow(null),
                 registrationFile: Joi.string().allow(null),
                 licenseFile: Joi.string().allow(null),
-                certificateFile: Joi.string().allow(null)
+                certificateFile: Joi.string().allow(null),
+                active:Joi.boolean() 
             })
         },
     updateClientHistorySchema:{
@@ -50,7 +51,8 @@ module.exports = {
             businessLicense: Joi.string().allow(null),
             registrationFile: Joi.string().allow(null),
             licenseFile: Joi.string().allow(null),
-            certificateFile: Joi.string().allow(null)
+            certificateFile: Joi.string().allow(null),
+            active:Joi.boolean() 
         }).min(1)
     }
 }

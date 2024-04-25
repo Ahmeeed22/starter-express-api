@@ -18,7 +18,8 @@ module.exports = {
                 }), 
                 clientHistory_id:Joi.number().min(0).required().messages({
                     "string.empty": "Sorry, clientHistory_id is required"
-                }) ,
+                }),
+                active:Joi.boolean() 
             })
     },
     loginSchema : {
@@ -48,6 +49,7 @@ module.exports = {
             clientHistory_id:Joi.number().min(0).messages({
                 "string.empty": "Sorry, clientHistory_id is required"
             }) ,
+            active:Joi.boolean() 
         }).min(1)
     }
 }

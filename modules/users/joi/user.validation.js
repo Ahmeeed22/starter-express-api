@@ -13,6 +13,7 @@ module.exports = {
             role_id : Joi.number().default(1),
             
             permissions: Joi.array().items(Joi.string()).default(['Pages.Client.List','Pages.Client.Edit','Pages.Statistics','Pages.Client.Add','Pages.ClientHistory.List','Pages.ClientHistory.Add','Pages.ClientHistory.Edit','Pages.Employee.List','Pages.Employee.Edit','Pages.Employee.Delete','Pages.Employee.Add','Pages.Car.Add','Pages.Car.Edit','Pages.Car.List','Pages.Car.Delete']),
+           active:Joi.boolean() 
         })
     },
     loginSchema : {
@@ -35,6 +36,7 @@ module.exports = {
             role : Joi.number().default(1),
             company_id:Joi.number().required().min(0) , 
             permissions: Joi.array().items(Joi.string()).default(['Pages.Client.List']),
+            active:Joi.boolean() 
         
         }).min(1)
     }
