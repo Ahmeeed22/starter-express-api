@@ -41,14 +41,14 @@ const getClientNote=catchAsyncError(async(req,res,next)=>{
 })
 
 const getClientNotes = catchAsyncError(async (req, res, next) => {
-    var clientId;
-    if (req.query.client_id) {
-        let client = await Client.findOne({ where: { user_id: req.query.client_id } });
-        clientId = client.id;
-    } else {
-        let client = await Client.findOne({ where: { user_id: req.loginData.id } });
-        clientId = client.id;
-    }
+    var clientId = req.query.client_id;
+    // if (req.query.client_id) {
+    //     let client = await Client.findOne({ where: { user_id: req.query.client_id } });
+    //     clientId = client.id;
+    // } else {
+    //     let client = await Client.findOne({ where: { user_id: req.loginData.id } });
+    //     clientId = client.id;
+    // }
 
     const page = req.query.page || 1;
     const per_page = parseInt(req.query.per_page) || 10; // Default per_page to 10 if not provided
