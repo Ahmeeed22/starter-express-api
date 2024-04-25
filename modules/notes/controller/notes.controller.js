@@ -18,7 +18,7 @@ const createNote =catchAsyncError(async (req, res) => {
 
 // get single client notes
 const getClientNote=catchAsyncError(async(req,res,next)=>{
-    var clientId ;
+    var clientId = req.query.client_id ;
     // if (req.query.client_id) {
     //     let client= await  Client.findOne({where:{user_id:req.query.client_id}});
     //     clientId = client.id
