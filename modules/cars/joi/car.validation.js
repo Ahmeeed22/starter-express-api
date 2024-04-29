@@ -12,7 +12,7 @@ module.exports = {
             insuranceExpiryDate: Joi.date().iso().required().messages({
                 "string.empty": "Sorry, insurance expiry date is required"
             }), 
-            formImage: Joi.string().required().messages({
+            formImage: Joi.string().messages({
                 "string.empty": "Sorry, form image is required"
             }), 
             clientHistory_id:Joi.number().min(0).required().messages({

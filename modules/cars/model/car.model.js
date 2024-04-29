@@ -18,7 +18,8 @@ const Car = sequelize.define("car", {
     },
     formImage: {
         type: Sequelize.STRING ,
-        defaultValue :"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"
+        defaultValue :"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401",
+        allowNull :false
     }
 })
 

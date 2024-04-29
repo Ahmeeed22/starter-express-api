@@ -3,6 +3,14 @@ const { catchAsyncError } = require("../../../helpers/catchSync");
 const AppError = require("../../../helpers/AppError");
 const Car = require("../model/car.model");
 
+const cloudinary= require('cloudinary');
+          
+cloudinary.config({ 
+  cloud_name: 'dznjcejpn', 
+  api_key: '522611695566884', 
+  api_secret: 'MoRZRCxxji3Fm14pryYpV18YyXs' 
+});
+
 
 // get all cars
 const getAllCars = catchAsyncError(async (req, res, next) => {
@@ -49,19 +57,26 @@ const getAllCars = catchAsyncError(async (req, res, next) => {
     });
 });
 
-
-
 // update car
 const updateCar=catchAsyncError(async(req,res,next)=>{
-
         let id=req.query.id; 
         var carOld = await Car.findOne({ where: { id } })
             if (!carOld)
                 next(new AppError('invalid id Car', 400)) ;
-
-        await Car.update({...req.body},{where:{id}}) ;
-        res.status(StatusCodes.OK).json({success:true, message : "Updated Car Successfully"})
-
+            // Check if req.file exists (image is uploaded)
+            if (req.file) {
+                cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+                    console.log(result);
+                    await Car.update({...req.body,formImage:result.secure_url},{where:{id}})
+                    res.status(StatusCodes.OK).json({success:true, message : "Updated Car Successfully"})
+                });
+                // If image is uploaded, update car with image
+                await Car.update({ ...req.body, image: req.file.filename }, { where: { id } });
+            } else {
+                // If no image is uploaded, update car without image
+                await Car.update({...req.body},{where:{id}}) ;
+                res.status(StatusCodes.OK).json({success:true, message : "Updated Car Successfully"})
+        }
 }) 
 
 // get single Car
@@ -74,12 +89,16 @@ const getSingleCar=catchAsyncError(async(req,res,next)=>{
 
 // add car
 const addCar=catchAsyncError(async(req,res,next)=>{
+    cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+      console.log(result);
+
+      var resultCreated= await Car.create({...req.body,formImage:result.secure_url})
+       res.status(StatusCodes.OK).json({success:true,result:resultCreated, message : "Created Car Successfully"})
+  });
         // const car= await  Car.findOne({where:{id:req.body.identity}});
         // if (car) {
         //     res.status(StatusCodes.BAD_REQUEST).json({message:"id is found before"})
         // } else {
-                var result= await Car.create({...req.body,formImage :"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"})
-                 res.status(StatusCodes.OK).json({success:true,result, message : "Created Car Successfully"})
         // }
 })
 
