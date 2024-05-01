@@ -9,7 +9,7 @@ module.exports = {
                 identity: Joi.string().pattern(new RegExp('^\\d{10}$')).required().messages({
                     "string.pattern.base": "Sorry, identity must be 10 digits"
                 }),
-                iqamaImage: Joi.string().required().optional(),
+                iqamaImage: Joi.string().optional(),
                 healthCertificate: Joi.string().required().messages({
                     "string.empty": "Sorry, Health Certificate is required"
                 }),

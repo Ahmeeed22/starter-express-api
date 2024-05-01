@@ -2,6 +2,14 @@ const { StatusCodes } = require("http-status-codes");
 const { catchAsyncError } = require("../../../helpers/catchSync");
 const Employee = require("../model/employee.model");
 const AppError = require("../../../helpers/AppError");
+const cloudinary= require('cloudinary');
+          
+cloudinary.config({ 
+  cloud_name: 'dznjcejpn', 
+  api_key: '522611695566884', 
+  api_secret: 'MoRZRCxxji3Fm14pryYpV18YyXs' 
+});
+
 
 // get all Emps
 const getAllEmps = catchAsyncError(async (req, res, next) => {
@@ -54,10 +62,22 @@ const getAllEmps = catchAsyncError(async (req, res, next) => {
 
 // update emp
 const updateEmp=catchAsyncError(async(req,res,next)=>{
-
         let id=req.query.id; 
-        await Employee.update({...req.body},{where:{id}})
-        res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+        var empOld = await Employee.findOne({ where: { id } })
+            if (!empOld)
+                next(new AppError('invalid id Employee', 400)) ;
+          // Check if req.file exists (image is uploaded)
+          if (req.file) {
+            cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+                console.log(result ,"error",error);
+                await Employee.update({...req.body,iqamaImage:result.secure_url},{where:{id}})
+                res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+            });
+        } else {
+            // If no image is uploaded, update Employee without image
+            await Employee.update({...req.body},{where:{id}}) ;
+            res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+    }
 
 }) 
 
@@ -77,9 +97,15 @@ const addEmp=catchAsyncError(async(req,res,next)=>{
         if (emp) {
             res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit "})
         } else {
-                var result= await Employee.create({...req.body,healthCertificate:"https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401",iqamaImage : "https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"})
-                 res.status(StatusCodes.OK).json({success:true,result, message : "Created Employee Successfully"})
+                 cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+                    console.log(result);
+              
+                    var result= await Employee.create({...req.body,iqamaImage :result.secure_url });
+                    res.status(StatusCodes.OK).json({success:true,result, message : "Created Employee Successfully"})
+                });
         }
+
+        
 })
 
 // check unique isIdentityAvailable 

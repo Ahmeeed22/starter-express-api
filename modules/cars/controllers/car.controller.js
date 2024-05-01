@@ -71,7 +71,7 @@ const updateCar=catchAsyncError(async(req,res,next)=>{
                     res.status(StatusCodes.OK).json({success:true, message : "Updated Car Successfully"})
                 });
                 // If image is uploaded, update car with image
-                await Car.update({ ...req.body, image: req.file.filename }, { where: { id } });
+                // await Car.update({ ...req.body, image: req.file.filename }, { where: { id } });
             } else {
                 // If no image is uploaded, update car without image
                 await Car.update({...req.body},{where:{id}}) ;
