@@ -6,11 +6,21 @@ const { Op, Sequelize } = require("sequelize");
 const { log } = require("console");
 const ClientHistory = require("../model/clientHistory.model");
 const Client = require("../../client/model/client.model");
+const cloudinary= require('cloudinary');
+          
+cloudinary.config({ 
+  cloud_name: 'dznjcejpn', 
+  api_key: '522611695566884', 
+  api_secret: 'MoRZRCxxji3Fm14pryYpV18YyXs' 
+});
+
 
 const getClientHistorys = catchAsyncError(async (req, res, next) => {
     var clientId ;
     if (req.query.client_id) {
+        console.log(req.query.client_id);
         let client= await  Client.findOne({where:{id:req.query.client_id}});
+        console.log(client);
         clientId = client.id
     }else{
         let client= await  Client.findOne({where:{user_id:req.loginData.id}});
@@ -78,13 +88,28 @@ const addClientHistory = catchAsyncError(async (req, res, next) => {
 
 const updateClientHistory = catchAsyncError(async (req, res, next) => {
     const id = req.query.id
+    console.log(req.files);
     var clientHistoryOld = await ClientHistory.findOne({ where: { id } })
     if (!clientHistoryOld)
         next(new AppError('invalid id ClientHistory', 400))
 
-        var updateData={} ;
-        updateData={...req.body} ;
-
+    var updateData={} ;
+    updateData={...req.body} ;
+     // Loop through each file field dynamically
+     
+     for (const fieldName of Object.keys(req.files)) {
+        // if (req.files.hasOwnProperty(fieldName)) {
+            const files = req.files[fieldName];
+            if (files && files.length > 0) {
+               await     cloudinary.v2.uploader.upload(files[0].path, (error, result)=>{
+                    console.log(result);
+                    updateData[fieldName] = result.secure_url;
+                  
+                });
+            }
+        // }
+    }
+        console.log("+++++++++++++++++++++++++  ",updateData);
         var clientHistory = await ClientHistory.update(updateData, { where: { id } }) ; 
         res.status(StatusCodes.OK).json({ success : true,message: "Updated Client History Successfully", result: clientHistory  })
 }) ;
