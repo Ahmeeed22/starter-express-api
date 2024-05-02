@@ -112,6 +112,7 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
      // Explicitly set date fields to null if needed
      const dateFieldsToReset = ['licenseDate', 'certificateDate', 'medicalInsuranceDate'];
      dateFieldsToReset.forEach(field => {
+        console.log("fooooooooooooooor eachhhhhhhhhhhhhhh");
          if (updateData.hasOwnProperty(field) && (updateData[field] == 'Invalid date') ) {
             console.log("gggggggggggggggggggg            ggggggggggggggggggg",updateData[field]);
              updateData[field] = null; 
