@@ -102,14 +102,22 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
             const files = req.files[fieldName];
             if (files && files.length > 0) {
                await     cloudinary.v2.uploader.upload(files[0].path, (error, result)=>{
-                    console.log(result);
+                    // console.log(result);
                     updateData[fieldName] = result.secure_url;
                   
                 });
             }
         // }
     }
-        console.log("+++++++++++++++++++++++++  ",updateData);
+     // Explicitly set date fields to null if needed
+     const dateFieldsToReset = ['licenseDate', 'certificateDate', 'medicalInsuranceDate'];
+     dateFieldsToReset.forEach(field => {
+         if (updateData.hasOwnProperty(field) && updateData[field] =='') {
+             updateData[field] = null;
+         }
+     });
+    console.log("teeeeessssssssssssttttt ",updateData.licenseDate === '', typeof updateData.licenseDate);
+    // console.log("+++++++++++++++++++++++++  ",updateData);
         var clientHistory = await ClientHistory.update(updateData, { where: { id } }) ; 
         res.status(StatusCodes.OK).json({ success : true,message: "Updated Client History Successfully", result: clientHistory  })
 }) ;
