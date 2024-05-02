@@ -113,14 +113,11 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
      const dateFieldsToReset = ['licenseDate', 'certificateDate', 'medicalInsuranceDate'];
      dateFieldsToReset.forEach(field => {
         console.log("fooooooooooooooor eachhhhhhhhhhhhhhh");
-         if (updateData.hasOwnProperty(field) && (updateData[field] == 'Invalid date' || updateData[field]== null) ) {
+         if (updateData.hasOwnProperty(field) && (updateData[field] == 'Invalid date' || updateData[field]== null|| updateData[field]== 'null') ) {
             console.log("gggggggggggggggggggg            ggggggggggggggggggg",updateData[field]);
              updateData[field] = null; 
          }
      });
-    console.log("teeeeessssssssssssttttt ",updateData.licenseDate === '', typeof updateData.licenseDate,updateData.licenseDate); 
-    // console.log("+++++++++++++++++++++++++  ",updateData);
-        updateData.licenseDate=null
         var clientHistory = await ClientHistory.update(updateData, { where: { id } }) ; 
         res.status(StatusCodes.OK).json({ success : true,message: "Updated Client History Successfully", result: clientHistory  })
 }) ;
