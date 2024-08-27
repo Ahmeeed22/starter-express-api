@@ -84,6 +84,18 @@ const addClientHistory = catchAsyncError(async (req, res, next) => {
 
 }) 
 
+const deleteClientHistory = catchAsyncError(async (req, res, next) => {
+
+    let clientHistory = await ClientHistory.findOne({ where: { id: req.query.id } });
+    if (!clientHistory)
+        next(new AppError('invalid id ClientHistory', 400))
+
+    await clientHistory.destroy();
+
+    res.status(StatusCodes.OK).json({ success: true, message: "Client history deleted successfully" });
+
+});
+
 
 
 const updateClientHistory = catchAsyncError(async (req, res, next) => {
@@ -112,9 +124,7 @@ const updateClientHistory = catchAsyncError(async (req, res, next) => {
      // Explicitly set date fields to null if needed
      const dateFieldsToReset = ['licenseDate', 'certificateDate', 'medicalInsuranceDate'];
      dateFieldsToReset.forEach(field => {
-        console.log("fooooooooooooooor eachhhhhhhhhhhhhhh");
          if (updateData.hasOwnProperty(field) && (updateData[field] == 'Invalid date' || updateData[field]== null|| updateData[field]== 'null') ) {
-            console.log("gggggggggggggggggggg            ggggggggggggggggggg",updateData[field]);
              updateData[field] = null; 
          }
      });
@@ -172,4 +182,4 @@ const isNumberAvailable =catchAsyncError(async(req,res,next)=>{
 
 
 
-module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys ,isNumberAvailable}
+module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys ,isNumberAvailable,deleteClientHistory}
