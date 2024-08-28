@@ -14,6 +14,10 @@ const Note = sequelize.define('note', {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
     },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    }
 });
 
 module.exports =Note ;

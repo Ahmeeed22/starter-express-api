@@ -27,6 +27,10 @@ const Employee = sequelize.define("employee", {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false,
+    },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 })
 

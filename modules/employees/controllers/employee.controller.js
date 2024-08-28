@@ -132,6 +132,18 @@ const deleteEmp=catchAsyncError(async(req,res,next)=>{
     })
     res.status(StatusCodes.OK).json({ success : true , message:" Deleted Employee success"})
 })
+
+// deleteClientHistory
+const deleteEmpSoft=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+    const emp = await Employee.findOne({where : {id : id}})
+        if (!emp) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await Employee.update({isDeleted : !emp.isDeleted},{where:{id:id}});
+
+       res.status(StatusCodes.OK).json({ success : true , message:" Deleted Employee success"})
+})
 // toggleActivation
 const toggleActivation=catchAsyncError( async (req , res , next)=>{
     let id =req.query.id ; 
@@ -143,4 +155,4 @@ const toggleActivation=catchAsyncError( async (req , res , next)=>{
         await Employee.update({active : !client.active},{where:{id:id}})
         res.status(StatusCodes.OK).json({success:true, message : `employee ${!client.active? 'Activated':'Disactived'}`})
 })
-module.exports={getAllEmps , addEmp , updateEmp , getSingleEmp , isIdentityAvailable , deleteEmp,toggleActivation}
+module.exports={getAllEmps , addEmp , updateEmp , getSingleEmp , isIdentityAvailable , deleteEmp,toggleActivation,deleteEmpSoft}

@@ -84,6 +84,20 @@ const toggleActivation=catchAsyncError( async (req , res , next)=>{
         res.status(StatusCodes.OK).json({success:true, message : `Client ${!client.active? 'Activated':'Disactived'}`})
 })
 
+// deleteClient
+const deleteClient=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+    const userBased = await Client.findOne({where : {id : id}})
+        let client=await User.findOne({
+            where:{id:userBased.user_id}  } );
+        if (!client) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await User.update({isDeleted : !client.isDeleted},{where:{id:client.id}});
+
+       res.status(StatusCodes.OK).json({ success : true , message:" Deleted Client success"})
+})
+
 // update client
 const updateClient=catchAsyncError(async(req,res,next)=>{
 
@@ -218,4 +232,4 @@ const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
         }
 })
 
-module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login ,isEmailAvailable ,isPhoneNumberAvailable , isIdentityAvailable , toggleActivation}
+module.exports={getAllClients,addClient,updateClient,getSingleClient,search , login ,isEmailAvailable ,isPhoneNumberAvailable , isIdentityAvailable , toggleActivation, deleteClient}

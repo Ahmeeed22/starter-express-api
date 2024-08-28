@@ -63,6 +63,10 @@ const ClientHistory = sequelize.define('clientHistory', {
         type: Sequelize.STRING,
         allowNull: true ,
         defaultValue : "https://ik.imagekit.io/2cvha6t2l9/logo.png?updatedAt=1713227861401"
+    },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 });
    

@@ -1,10 +1,10 @@
 const clientRoutes= require("express").Router();
 const isAuth = require("../../../common/middleare/isAuth");
 const validateRequest=require('../../../common/middleare/validationRequest');
-const { getClientHistorys } = require("../../clinetHistory/controller/clientHistory.controller");
+const { getClientHistorys, deleteClientHistorySoft } = require("../../clinetHistory/controller/clientHistory.controller");
 
 
-const {addClient , getAllClients , getSingleClient , login ,search ,updateClient ,isEmailAvailable ,isIdentityAvailable , isPhoneNumberAvailable, toggleActivation } = require("../controllers/client.controller")
+const {addClient , getAllClients , getSingleClient , login ,search ,updateClient ,isEmailAvailable ,isIdentityAvailable , isPhoneNumberAvailable, toggleActivation, deleteClient } = require("../controllers/client.controller")
 const { addClientSchema , loginSchema , updateClientSchema } = require("../joi/client.validation");
 
 
@@ -20,6 +20,7 @@ clientRoutes.post('/IsEmailAvailable',isEmailAvailable) ;
 clientRoutes.post('/IsIdentityAvailable',isIdentityAvailable) ;
 clientRoutes.post('/IsPhoneNumberAvailable',isPhoneNumberAvailable) ;
 clientRoutes.get('/ToggleActivation',isAuth('ALL'),toggleActivation) ;
-
+clientRoutes.put('/DeleteClients',isAuth('ALL'),deleteClientHistorySoft) ;
+clientRoutes.delete('/DeleteClient',isAuth('ALL'),deleteClient) ;
 
 module.exports=clientRoutes; 

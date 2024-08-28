@@ -96,6 +96,18 @@ const deleteClientHistory = catchAsyncError(async (req, res, next) => {
 
 });
 
+// deleteClientHistory
+const deleteClientHistorySoft=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+    const clientHistory = await ClientHistory.findOne({where : {id : id}})
+        if (!clientHistory) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await ClientHistory.update({isDeleted : !clientHistory.isDeleted},{where:{id:id}});
+
+       res.status(StatusCodes.OK).json({ success : true , message:" Deleted client History success"})
+})
+
 
 
 const updateClientHistory = catchAsyncError(async (req, res, next) => {
@@ -182,4 +194,4 @@ const isNumberAvailable =catchAsyncError(async(req,res,next)=>{
 
 
 
-module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys ,isNumberAvailable,deleteClientHistory}
+module.exports = { addClientHistory , getClientHistorys ,updateClientHistory , searchClientHistorys ,isNumberAvailable,deleteClientHistory,deleteClientHistorySoft}

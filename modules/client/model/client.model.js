@@ -10,6 +10,10 @@ const Client = sequelize.define("client", {
     active: {
         type: Sequelize.BOOLEAN,
         defaultValue: true,
+    },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 });
 

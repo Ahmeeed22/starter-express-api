@@ -111,8 +111,19 @@ const addCar=catchAsyncError(async(req,res,next)=>{
 //         }else{
 //             return res.status(200).json({ success : true ,result: true });
 //         }
-// })
+// });
 
+// deleteClientHistory
+const deleteCarSoft=catchAsyncError( async (req , res , next)=>{
+    let id =req.query.id ; 
+    const car = await Car.findOne({where : {id : id}})
+        if (!car) {
+            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+        }      
+        await Car.update({isDeleted : !car.isDeleted},{where:{id:id}});
+
+       res.status(StatusCodes.OK).json({ success : true , message:" Deleted car success"})
+})
 // delete car
 const deleteCar=catchAsyncError(async(req,res,next)=>{
     let id=req.query.id
@@ -138,4 +149,4 @@ const toggleActivation=catchAsyncError( async (req , res , next)=>{
         res.status(StatusCodes.OK).json({success:true, message : `Car ${!client.active? 'Activated':'Disactived'}`})
 })
 
-module.exports={deleteCar , addCar , updateCar , getAllCars , getSingleCar , toggleActivation}
+module.exports={deleteCar , addCar , updateCar , getAllCars , getSingleCar , toggleActivation,deleteCarSoft}
