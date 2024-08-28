@@ -37,7 +37,7 @@ const getAllEmps = catchAsyncError(async (req, res, next) => {
     }
 
     const emps = await Employee.findAndCountAll({
-        where: { clientHistory_id: req.query.clientHistory_id },
+        where: { clientHistory_id: req.query.clientHistory_id ,isDeleted:false},
         limit: perPage,
         offset: offset,
         order: [['createdAt', 'DESC']] // Order by createdAt in descending order

@@ -27,6 +27,7 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
     if (req.query.search) {
         searchCriteria = {
             ...searchCriteria,
+
             [Op.or]: [
                 { name: { [Op.like]: `%${search}%` } },
                 { email: { [Op.like]: `%${search}%` } },
@@ -41,7 +42,7 @@ const getAllClients = catchAsyncError(async(req, res, next) => {
 
     // Fetch clients with pagination
     const clients = await User.findAll({
-        where: searchCriteria,
+        where: {...searchCriteria},
         limit: perPage,
         offset: offset,
         order: [['createdAt', 'DESC']], // Order by createdAt in descending order

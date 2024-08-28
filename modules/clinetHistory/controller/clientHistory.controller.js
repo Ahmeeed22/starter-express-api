@@ -33,6 +33,7 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
     if (req.query.search) {
         searchCriteria = {
             ...searchCriteria,
+            
             [Op.or]: [
                 { name: { [Op.like]: `%${search}%` } },
                 { number: { [Op.like]: `%${search}%` } },
@@ -47,7 +48,7 @@ const getClientHistorys = catchAsyncError(async (req, res, next) => {
     if (req.query.clientHistory_id) {
         searchCriteria = { id : req.query.clientHistory_id };
         var clientHistory = await ClientHistory.findOne({
-            where: searchCriteria
+            where: {...searchCriteria,isDeleted:false}
         });
         return res.status(StatusCodes.OK).json({ success: true, result: clientHistory });
     }
@@ -99,6 +100,8 @@ const deleteClientHistory = catchAsyncError(async (req, res, next) => {
 // deleteClientHistory
 const deleteClientHistorySoft=catchAsyncError( async (req , res , next)=>{
     let id =req.query.id ; 
+    console.log("id=================== ",id);
+    
     const clientHistory = await ClientHistory.findOne({where : {id : id}})
         if (!clientHistory) {
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
@@ -169,7 +172,7 @@ const searchClientHistorys = catchAsyncError(async (req, res, next) => {
     }
 
     if (filterObj.where.name ||filterObj.where.number || filterObj.where.active == 0 || filterObj.where.active == 1 ) {
-        let clientHistory = await ClientHistory.findAll({ ...filterObj   
+        let clientHistory = await ClientHistory.findAll({ ...filterObj,isDeleted:false   
             // ,include:[
             //  {model:,attributes: []},
             //  { model:  ,order: [['createdAt', 'DESC']]}
