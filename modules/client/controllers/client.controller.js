@@ -95,7 +95,9 @@ const deleteClient=catchAsyncError( async (req , res , next)=>{
             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
         }      
         await User.update({isDeleted : !client.isDeleted},{where:{id:client.id}});
-
+        await Client.update({isDeleted : !userBased.isDeleted},{where:{id:id}});
+        console.log("###########################################");
+        
        res.status(StatusCodes.OK).json({ success : true , message:" Deleted Client success"})
 })
 

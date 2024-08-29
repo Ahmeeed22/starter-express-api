@@ -20,7 +20,7 @@ clientRoutes.post('/IsEmailAvailable',isEmailAvailable) ;
 clientRoutes.post('/IsIdentityAvailable',isIdentityAvailable) ;
 clientRoutes.post('/IsPhoneNumberAvailable',isPhoneNumberAvailable) ;
 clientRoutes.get('/ToggleActivation',isAuth('ALL'),toggleActivation) ;
-clientRoutes.put('/DeleteClients',isAuth('ALL'),deleteClientHistorySoft) ;
-clientRoutes.delete('/DeleteClient',isAuth('ALL'),deleteClient) ;
+// clientRoutes.put('/DeleteClients',isAuth('ALL'),deleteClientHistorySoft) ;
+clientRoutes.put('/DeleteClients',isAuth('ALL'),deleteClient) ;
 
 module.exports=clientRoutes; 

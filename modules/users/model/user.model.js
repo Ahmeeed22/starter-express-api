@@ -43,6 +43,10 @@ const User=sequelize.define("user",{
     admin_id: {
       type: Sequelize.INTEGER,
       allowNull: true // Allow null for users of type 'Admin'
+    },
+    isDeleted: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 })
 
