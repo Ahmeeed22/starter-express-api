@@ -40,6 +40,7 @@ module.exports = {
                 "string.pattern.base": "Sorry, identity must be 10 digits"
             }),
             iqamaImage: Joi.string().optional(),
+            contractImage: Joi.string().optional(),
             healthCertificate: Joi.string().messages({
                 "string.empty": "Sorry, Health Certificate is required"
             }),

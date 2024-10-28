@@ -6,8 +6,9 @@ const { addEmp , deleteEmp ,getAllEmps ,getSingleEmp ,isIdentityAvailable ,updat
 const { addEmpSchema , updateEmpSchema} = require('../joi/employee.validation');
 
 employeeRoutes.get('/AllEmployees',isAuth('ALL'),getAllEmps) 
-employeeRoutes.post('/AddEmployee', uploadSingleFile('iqamaImage','employee'), validateRequest(addEmpSchema) ,isAuth('ALL'),addEmp)
-employeeRoutes.put('/UpdateEmployee', uploadSingleFile('iqamaImage','employee'),validateRequest(updateEmpSchema),isAuth('ALL'),updateEmp)
+employeeRoutes.post('/AddEmployee',uploadMixOfFiles([{name: 'iqamaImage', maxCount:1 },{name: 'contractImage', maxCount:1 }],'employee')
+, validateRequest(addEmpSchema) ,isAuth('ALL'),addEmp)
+employeeRoutes.put('/UpdateEmployee',uploadMixOfFiles([{name: 'iqamaImage', maxCount:1 },{name: 'contractImage', maxCount:1 }],'employee'),validateRequest(updateEmpSchema),isAuth('ALL'),updateEmp)
 employeeRoutes.delete('/DeleteEmployee',isAuth('ALL'),deleteEmp) ;
 employeeRoutes.put('/DeleteEmployee',isAuth('ALL'),deleteEmpSoft) ;
 employeeRoutes.get('/GetSingleEmployee',isAuth('ALL'),getSingleEmp) ;

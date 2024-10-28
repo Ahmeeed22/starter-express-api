@@ -61,25 +61,60 @@ const getAllEmps = catchAsyncError(async (req, res, next) => {
 
 
 // update emp
-const updateEmp=catchAsyncError(async(req,res,next)=>{
-        let id=req.query.id; 
-        var empOld = await Employee.findOne({ where: { id } })
-            if (!empOld)
-                next(new AppError('invalid id Employee', 400)) ;
-          // Check if req.file exists (image is uploaded)
-          if (req.file) {
-            cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
-                console.log(result ,"error",error);
-                await Employee.update({...req.body,iqamaImage:result.secure_url},{where:{id}})
-                res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
-            });
-        } else {
-            // If no image is uploaded, update Employee without image
-            await Employee.update({...req.body},{where:{id}}) ;
-            res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+// const updateEmp=catchAsyncError(async(req,res,next)=>{
+//         let id=req.query.id; 
+//         var empOld = await Employee.findOne({ where: { id } })
+//             if (!empOld)
+//                 next(new AppError('invalid id Employee', 400)) ;
+//           // Check if req.file exists (image is uploaded)
+//           if (req.file) {
+//             cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+//                 console.log(result ,"error",error);
+//                 await Employee.update({...req.body,iqamaImage:result.secure_url},{where:{id}})
+//                 res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+//             });
+//         } else {
+//             // If no image is uploaded, update Employee without image
+//             await Employee.update({...req.body},{where:{id}}) ;
+//             res.status(StatusCodes.OK).json({success:true, message : "Updated Employee Successfully"})
+//     }
+
+// }) 
+const updateEmp = catchAsyncError(async (req, res, next) => {
+    let id = req.query.id; 
+    const empOld = await Employee.findOne({ where: { id } });
+    
+    if (!empOld) {
+        return next(new AppError('Invalid Employee ID', 400));
     }
 
-}) 
+    // Initialize updateData object with request body data
+    let updateData = { ...req.body };
+
+    try {
+        // Check and upload `iqamaImage` if it exists
+        if (req.files && req.files.iqamaImage) {
+            const iqamaImageResult = await cloudinary.v2.uploader.upload(req.files.iqamaImage[0].path);
+            updateData.iqamaImage = iqamaImageResult.secure_url;
+        }
+
+        // Check and upload `contractImage` if it exists
+        if (req.files && req.files.contractImage) {
+            const contractImageResult = await cloudinary.v2.uploader.upload(req.files.contractImage[0].path);
+            updateData.contractImage = contractImageResult.secure_url;
+        }
+
+        // Update the Employee with new data
+        await Employee.update(updateData, { where: { id } });
+
+        res.status(StatusCodes.OK).json({ success: true, message: "Updated Employee Successfully" });
+
+    } catch (error) {
+        console.error("Error updating Employee:", error);
+        return next(new AppError('Error updating Employee', 500));
+    }
+});
+
 
 // get single emp
 const getSingleEmp=catchAsyncError(async(req,res,next)=>{
@@ -91,22 +126,59 @@ const getSingleEmp=catchAsyncError(async(req,res,next)=>{
    
 })
 
-// add employee
-const addEmp=catchAsyncError(async(req,res,next)=>{
-        const emp= await  Employee.findOne({where:{identity:req.body.identity}});
-        if (emp) {
-            res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit "})
-        } else {
-                 cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
-                    console.log(result);
+// // add employee
+// const addEmp=catchAsyncError(async(req,res,next)=>{
+//         const emp= await  Employee.findOne({where:{identity:req.body.identity}});
+//         if (emp) {
+//             res.status(StatusCodes.BAD_REQUEST).json({message:"identity is excit "})
+//         } else {
+//                  cloudinary.v2.uploader.upload(req.file.path,async(error, result)=>{
+//                     console.log(result);
               
-                    var result= await Employee.create({...req.body,iqamaImage :result.secure_url });
-                    res.status(StatusCodes.OK).json({success:true,result, message : "Created Employee Successfully"})
-                });
-        }
+//                     var result= await Employee.create({...req.body,iqamaImage :result.secure_url });
+//                     res.status(StatusCodes.OK).json({success:true,result, message : "Created Employee Successfully"})
+//                 });
+//         }
 
         
-})
+// })
+const addEmp = catchAsyncError(async (req, res, next) => {
+    const emp = await Employee.findOne({ where: { identity: req.body.identity } });
+    
+    if (emp) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: "Identity already exists" });
+    } 
+    
+    // Assuming `iqamaImage` and `contractImage` are files uploaded via Multer (use `upload.fields` to handle multiple files)
+    const iqamaImageFile = req.files.iqamaImage ? req.files.iqamaImage[0].path : null;
+    const contractImageFile = req.files.contractImage ? req.files.contractImage[0].path : null;
+
+    try {
+        // Upload `iqamaImage` to Cloudinary
+        let iqamaImageResult = iqamaImageFile ? await cloudinary.v2.uploader.upload(iqamaImageFile) : null;
+
+        // Upload `contractImage` to Cloudinary
+        let contractImageResult = contractImageFile ? await cloudinary.v2.uploader.upload(contractImageFile) : null;
+
+        // Create employee record with the uploaded image URLs
+        const result = await Employee.create({
+            ...req.body,
+            iqamaImage: iqamaImageResult ? iqamaImageResult.secure_url : null,
+            contractImage: contractImageResult ? contractImageResult.secure_url : null
+        });
+
+        return res.status(StatusCodes.OK).json({
+            success: true,
+            result,
+            message: "Created Employee Successfully"
+        });
+
+    } catch (error) {
+        console.error("Error uploading files to Cloudinary:", error);
+        return next(new AppError('Error uploading images', 500));
+    }
+});
+
 
 // check unique isIdentityAvailable 
 const isIdentityAvailable =catchAsyncError(async(req,res,next)=>{
