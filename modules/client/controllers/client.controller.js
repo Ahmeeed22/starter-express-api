@@ -86,20 +86,54 @@ const toggleActivation=catchAsyncError( async (req , res , next)=>{
 })
 
 // deleteClient
-const deleteClient=catchAsyncError( async (req , res , next)=>{
-    let id =req.query.id ; 
-    const userBased = await Client.findOne({where : {id : id}})
-        let client=await User.findOne({
-            where:{id:userBased.user_id}  } );
-        if (!client) {
-            res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
-        }      
-        await User.update({isDeleted : !client.isDeleted},{where:{id:client.id}});
-        await Client.update({isDeleted : !userBased.isDeleted},{where:{id:id}});
-        console.log("###########################################");
+// const deleteClient=catchAsyncError( async (req , res , next)=>{
+//     let id =req.query.id ; 
+//     const userBased = await Client.findOne({where : {id : id}})
+//         let client=await User.findOne({
+//             where:{id:userBased.user_id}  } );
+//         if (!client) {
+//             res.status(StatusCodes.BAD_REQUEST).json({success : false,message:"id is no exit"})
+//         }      
+//         await User.update({isDeleted : !client.isDeleted},{where:{id:client.id}});
+//         await Client.update({isDeleted : !userBased.isDeleted},{where:{id:id}});
+//         console.log("###########################################");
         
-       res.status(StatusCodes.OK).json({ success : true , message:" Deleted Client success"})
-})
+//        res.status(StatusCodes.OK).json({ success : true , message:" Deleted Client success"})
+// });
+const deleteClient = catchAsyncError(async (req, res, next) => {
+    let id = req.query.id;
+    // Find the client record using the Client model
+    const userBased = await Client.findOne({ where: { id: id } });
+    
+    if (!userBased) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ 
+            success: false, 
+            message: "Client with this ID does not exist" 
+        });
+    }
+
+    // Find the associated user record using the User model
+    let client = await User.findOne({ where: { id: userBased.user_id } });
+    
+    if (!client) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ 
+            success: false, 
+            message: "Associated user does not exist" 
+        });
+    }
+
+    // Perform hard delete: destroy the User record and Client record
+    await User.destroy({ where: { id: client.id } });
+    await Client.destroy({ where: { id: id } });
+
+    console.log("###########################################");
+
+    res.status(StatusCodes.OK).json({ 
+        success: true, 
+        message: "Deleted Client successfully" 
+    });
+});
+
 
 // update client
 const updateClient=catchAsyncError(async(req,res,next)=>{
