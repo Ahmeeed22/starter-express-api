@@ -1,7 +1,7 @@
 const isAuth = require('../../../common/middleare/isAuth');
 const employeeRoutes=require('express').Router() ;
 const validateRequest = require("../../../common/middleare/validationRequest");
-const { uploadSingleFile } = require('../../../helpers/fileUpload');
+const { uploadSingleFile, uploadMixOfFiles } = require('../../../helpers/fileUpload');
 const { addEmp , deleteEmp ,getAllEmps ,getSingleEmp ,isIdentityAvailable ,updateEmp, toggleActivation, deleteEmpSoft } = require("../controllers/employee.controller");
 const { addEmpSchema , updateEmpSchema} = require('../joi/employee.validation');
 

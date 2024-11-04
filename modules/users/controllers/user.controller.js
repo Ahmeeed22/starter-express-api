@@ -72,17 +72,23 @@ const search=catchAsyncError(async(req,res,next)=>{
 const addUser=catchAsyncError(async(req,res,next)=>{
     const {password , role_id , name} = req.body
         const user= await  User.findOne({where:{email:req.body.email}});
+        console.log("test111111111111111111111111111111111111111111");
+        
         if (user) {
             res.status(StatusCodes.BAD_REQUEST).json({suucess : false, message:"email is exit"})
         } else {
             //
             if(role_id == 1){
+                console.log("test2222222222222222222222222");
+                
                 bcrypt.hash(password,7, async (err,hash)=>{
                     if(err) throw err
                     var result= await User.create({...req.body, permissions: JSON.stringify(req.body.permissions) , password:hash})
                      res.status(StatusCodes.CREATED).json({message:"success",result})
                 })
             }else if(role_id == 2){
+                console.log("test3333333333333333333333333333333");
+                
                 const passwordNew = name + 137 ;
                 bcrypt.hash(passwordNew,7, async (err,hash)=>{
                     if(err) throw err
